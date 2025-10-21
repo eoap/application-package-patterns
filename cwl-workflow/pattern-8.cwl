@@ -14,10 +14,10 @@ $namespaces:
 s:softwareVersion: 1.0.0
 s:applicationCategory: "Earth Observation application package"
 s:additionalProperty:
-  - @type: s:PropertyValue
+  - '@type': s:PropertyValue
     s:name: application-type
     s:value: delineation
-  - @type: s:PropertyValue
+  - '@type': s:PropertyValue
     s:name: domain
     s:value: hydrology
 schemas:
