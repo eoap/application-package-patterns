@@ -15,10 +15,10 @@ $namespaces:
 s:softwareVersion: 1.0.0
 s:applicationCategory: "Earth Observation application package"
 s:additionalProperty:
-  - @type: s:PropertyValue
+  - '@type': s:PropertyValue
     s:name: application-type
     s:value: vegetation-index
-  - @type: s:PropertyValue
+  - '@type': s:PropertyValue
     s:name: domain
     s:value: agriculture
 schemas:
