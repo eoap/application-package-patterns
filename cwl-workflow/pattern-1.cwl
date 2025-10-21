@@ -9,15 +9,15 @@ s:softwareVersion: 1.0.0
 
 s:applicationCategory: "Earth Observation application package"
 s:additionalProperty:
-  - s:@type: s:PropertyValue
+  - @type: s:PropertyValue
     s:name: application-type
     s:value: delineation
-  - s:@type: s:PropertyValue
+  - @type: s:PropertyValue
     s:name: domain
     s:value: hydrology
 
 s:thumbnail: 
-  s:@type: s:ImageObject
+  @type: s:ImageObject
   s:contentUrl: "https://s3.waw3-2.cloudferro.com/swift/v1/stac-png/S2_L2A.jpg"
   s:caption: "Water bodies detected based on the NDWI and otsu threshold"
   s:encodingFormat: "image/jpeg"
@@ -26,22 +26,22 @@ s:thumbnail:
 
 
 s:license:
-  s:@type: s:CreativeWork
+  @type: s:CreativeWork
   s:name: "License CC BY 4.0"
   s:url: "https://creativecommons.org/licenses/by/4.0/"
   s:encodingFormat: "text/html"
 
 s:documentation:
-  - s:@type: s:CreativeWork
+  - @type: s:CreativeWork
     s:name: "User Manual"
     s:url: "https://eoap.github.io/application-package-patterns/"
     s:encodingFormat: "text/html"
 
 s:author:
-  s:@type: s:Person
+  @type: s:Person
   s:name: "John Doe"
   s:affiliation:
-    s:@type: s:Organization
+    @type: s:Organization
     s:name: "Make EO Great Again Platform"
   s:email: "john.doe@meogap.org"
   
