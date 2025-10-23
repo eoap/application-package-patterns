@@ -31,11 +31,11 @@ s:license:
   s:url: "https://creativecommons.org/licenses/by/4.0/"
   s:encodingFormat: "text/html"
 
-s:documentation:
-  - '@type': s:CreativeWork
-    s:name: "User Manual"
-    s:url: "https://eoap.github.io/application-package-patterns/"
-    s:encodingFormat: "text/html"
+s:softwareHelp:
+- '@type': s:CreativeWork
+  s:name: "User Manual"
+  s:url: "https://eoap.github.io/application-package-patterns/"
+  s:encodingFormat: "text/html"
 
 s:author:
   '@type': s:Person
