@@ -8,13 +8,13 @@ schemas:
 s:softwareVersion: 1.0.0
 
 s:applicationCategory: "Earth Observation application package"
-s:additionalProperty:
-  - '@type': s:PropertyValue
-    s:name: application-type
-    s:value: delineation
-  - '@type': s:PropertyValue
-    s:name: domain
-    s:value: hydrology
+s:keywords:
+- '@type': s:DefinedTerm
+  s:name: application-type
+  s:description: delineation
+- '@type': s:DefinedTerm
+  s:name: domain
+  s:description: hydrology
 
 s:thumbnail: 
   '@type': s:ImageObject
