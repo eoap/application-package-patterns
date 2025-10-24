@@ -39,7 +39,8 @@ s:softwareHelp:
 
 s:author:
   '@type': s:Person
-  s:name: "John Doe"
+  s:givenName: "John"
+  s:familyName: "Doe"
   s:affiliation:
     '@type': s:Organization
     s:name: "Make EO Great Again Platform"
