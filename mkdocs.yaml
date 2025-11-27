@@ -1,4 +1,6 @@
 site_name: Application Packages patterns
+repo_url: https://github.com/eoap/application-package-patterns/
+repo_name: eoap/application-package-patterns
 
 theme:
     logo: imgs/icon-eoap.png
