@@ -1,9 +1,80 @@
-cwlVersion: v1.2
+cwlVersion: v1.0
+schemas:
+- http://schema.org/version/9.0/schemaorg-current-http.rdf
 $namespaces:
   s: https://schema.org/
+  eoap: "http://oeap.github.io/schema"
+
+s:name: Water body detection based on NDWI and the otsu threshold
+s:description: Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 or Landsat-9 staged acquisitions.
+s:dateCreated: '2025-01-01'
+s:license:
+  '@type': s:CreativeWork
+  s:identifier: Apache-2.0
+
+s:keywords:
+- CWL
+- Workflow
+- Earth Observation
+
+s:operatingSystem:
+- Linux
+- macOS
+s:softwareRequirements:
+- https://cwltool.readthedocs.io/en/latest/
+- https://www.python.org/
+
 s:softwareVersion: 1.0.0
-schemas:
-  - http://schema.org/version/9.0/schemaorg-current-http.rdf
+s:softwareHelp:
+- '@type': s:CreativeWork
+  s:name: User Manual
+  s:url: tps://eoap.github.io/application-package-patterns/
+
+s:publisher:
+  '@type': s:Organization
+  s:name: Make Earth Observation Great Again
+  s:email: info@meoga.com
+  s:identifier: https://ror.org/9999cx000
+
+s:author:
+- '@type': s:Role
+  s:roleName: Project Manager
+  s:additionalType: http://purl.org/spar/datacite/ProjectManager
+  s:author:
+    '@type': s:Person
+    s:givenName: Lois
+    s:familyName: Lane
+    s:email: lois.lane@dailyplanet.com
+    s:identifier: https://orcid.org/0000-9999-0000-9999
+    s:affiliation:
+      '@type': s:Organization
+      s:name: Daily Planet
+      s:identifier: https://ror.org/0000cx000
+- '@type': s:Role
+  s:roleName: Researcher
+  s:additionalType: http://purl.org/spar/datacite/Researcher
+  s:author:
+    '@type': s:Person
+    s:givenName: Clark
+    s:familyName: Kent
+    s:email: clark.kent@dailyplanet.com
+    s:identifier: https://orcid.org/0000-9999-0000-9999
+    s:affiliation:
+      '@type': s:Organization
+      s:name: Daily Planet
+      s:identifier: https://ror.org/0000cx000
+
+s:contributor:
+- '@type': s:Person
+  s:givenName: Lex
+  s:familyName: Luthor
+  s:email: lex.luthor@luthorcorp.com
+  s:identifier: https://orcid.org/0000-9999-0000-9999
+  s:affiliation:
+    '@type': s:Organization
+    s:name: Luthor Corp
+    s:identifier: https://ror.org/0000cx000 
+
 $graph:
   - class: Workflow
     id: pattern-12
@@ -15,6 +86,8 @@ $graph:
         types:
         - $import: https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml
         - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
+    hints:
+    - eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest
