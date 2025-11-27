@@ -86,8 +86,8 @@ $graph:
         types:
         - $import: https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml
         - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
-    hints:
-    - eoap:JSONSchemaHint
+    # hints:
+    # - JSONSchemaHint
     inputs:
       aoi:
         label: area of interest

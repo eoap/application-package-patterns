@@ -81,8 +81,8 @@ $graph:
     label: Water bodies detection based on NDWI and the otsu threshold
     doc: Water bodies detection based on NDWI and otsu threshold applied to a mandatory Landsat-8/9 acquisition and an optional second acquisition
     requirements: []
-    hints:
-    - eoap:JSONSchemaHint
+    # hints:
+    # - eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest

@@ -91,8 +91,8 @@ $graph:
     requirements:
       SubworkflowFeatureRequirement: {}
       ScatterFeatureRequirement: {}
-    hints:
-    - eoap:JSONSchemaHint
+    # hints:
+    # - eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest

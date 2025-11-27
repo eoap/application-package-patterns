@@ -82,8 +82,8 @@ $graph:
     doc: Water bodies detection based on NDWI and otsu threshold applied to a set of Landsat-8/9 acquisitions
     requirements: 
       ScatterFeatureRequirement: {}
-    hints:
-    - eoap:JSONSchemaHint
+    # hints:
+    # - eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest
