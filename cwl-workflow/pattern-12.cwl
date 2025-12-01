@@ -3,7 +3,7 @@ schemas:
 - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $namespaces:
   s: https://schema.org/
-  eoap: "http://oeap.github.io/schema"
+  eoap: "http://oeap.github.io/schema#"
 
 s:name: Water body detection based on NDWI and the otsu threshold
 s:description: Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 or Landsat-9 staged acquisitions.

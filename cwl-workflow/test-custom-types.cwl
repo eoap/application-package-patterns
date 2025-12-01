@@ -3,7 +3,7 @@ schemas:
 - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $namespaces:
   s: https://schema.org/
-  eoap: "http://oeap.github.io/schema"
+  eoap: "http://oeap.github.io/schema#"
 
 s:name: Echo custom CWL Types
 s:description: This workflow demonstrates usage of all CWL primitive types. It runs the `echo-tool` with default values and captures the output in a file.

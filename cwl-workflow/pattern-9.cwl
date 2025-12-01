@@ -11,7 +11,7 @@ schemas:
 - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $namespaces:
   s: https://schema.org/
-  eoap: "http://oeap.github.io/schema"
+  eoap: "http://oeap.github.io/schema#"
 
 s:name: NDVI and NDWI vegetation indexes
 s:description: NDVI and NDWI vegetation indexes from Landsat-8/9 acquisitions.
