@@ -92,8 +92,8 @@ $graph:
     doc: NDVI and NDWI vegetation indexes from Landsat-8/9 acquisitions
     requirements:
       ScatterFeatureRequirement: {}
-    # hints:
-    # - eoap:JSONSchemaHint
+    hints:
+    - class: eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest

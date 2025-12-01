@@ -92,8 +92,8 @@ $graph:
     doc: NDVI mean from Landsat-8/9 acquisitions
     requirements:
       ScatterFeatureRequirement: {}
-    # hints:
-    # - eoap:JSONSchemaHint
+    hints:
+    - class: eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest
