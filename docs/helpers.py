@@ -61,38 +61,34 @@ class WorkflowViewer:
 
         display(Markdown(md))
 
-    def display_components_diagram(self):
+    def _invoke_puml(
+        self,
+        diagram_type: DiagramType
+    ):
         out = StringIO()
         to_puml(
             cwl_document=self.workflow,
-            diagram_type=DiagramType.COMPONENT,
+            diagram_type=diagram_type,
             output_stream=out,
+            workflow_id=self.entrypoint
         )
 
         clear_output = out.getvalue()
         encoded = deflate_and_encode(clear_output)
-        diagram_url = f"https://www.plantuml.com/plantuml/png/{encoded}"
+        diagram_url = f"https://uml.planttext.com/plantuml/png/{encoded}"
 
         with urlopen(diagram_url) as url:
             img = Image.open(BytesIO(url.read()))
         display(img)
 
+    def display_components_diagram(self):
+        self._invoke_puml(DiagramType.COMPONENT)
+
+    def display_sequence_diagram(self):
+        self._invoke_puml(DiagramType.SEQUENCE)
+
     def plot(self):
-        args = ["--print-dot", f"{self.cwl_file}#{self.entrypoint}"]
-
-        stream_err = StringIO()
-        stream_out = StringIO()
-
-        _ = cwlmain(
-            args,
-            stdout=stream_out,
-            stderr=stream_err,
-            executor=NoopJobExecutor(),
-            loadingContext=LoadingContext(),
-            runtimeContext=RuntimeContext(),
-        )
-
-        return graphviz.Source(stream_out.getvalue())
+        self._invoke_puml(DiagramType.STATE)
 
 
 class WorkflowWrapper:
