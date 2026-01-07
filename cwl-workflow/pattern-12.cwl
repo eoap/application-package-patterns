@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 schemas:
 - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $namespaces:
