@@ -74,7 +74,7 @@ class WorkflowViewer:
         out = StringIO()
         to_puml(
             cwl_document=self.workflow,
-            diagram_type=DiagramType.COMPONENT,
+            diagram_type=diagram_type,
             output_stream=out,
             workflow_id=self.entrypoint
         )
@@ -93,8 +93,11 @@ class WorkflowViewer:
     def display_sequence_diagram(self):
         self._invoke_puml(DiagramType.SEQUENCE)
 
-    def plot(self):
+    def display_state_diagram(self):
         self._invoke_puml(DiagramType.STATE)
+
+    def display_class_diagram(self):
+        self._invoke_puml(DiagramType.CLASS)
 
 
 class WorkflowWrapper:
@@ -121,3 +124,13 @@ class WorkflowWrapper:
             workflow_id=self.entrypoint,
             stage_out=stage_out_cwl,
         )
+
+additional_inputs = {
+    "another_input": "some_value",
+    "s3_bucket": "my-bucket",
+    "sub_path": "my/sub/path",
+    "aws_access_key_id": "test",
+    "aws_secret_access_key": "test",
+    "region_name": "us-west-1",
+    "endpoint_url": "https://s3.us-west-1.amazonaws.com",
+}

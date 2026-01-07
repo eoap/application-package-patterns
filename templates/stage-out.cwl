@@ -3,21 +3,33 @@ cwlVersion: v1.0
 
 class: CommandLineTool
 id: my-super-stage-out
-
+label: "Super Stage-out to S3"
 doc: "Stage-out the results to S3"
 inputs:
   s3_bucket:
     type: string
+    label: "S3 Bucket name"
+    doc: "The name of the S3 bucket to stage out to"
   sub_path:
     type: string
+    label: "Sub-path in S3 bucket"
+    doc: "The sub-path within the S3 bucket to stage out to"
   aws_access_key_id:
     type: string
+    label: "AWS Access Key ID"
+    doc: "The AWS Access Key ID"
   aws_secret_access_key:
     type: string
+    label: "AWS Secret Access Key"
+    doc: "The AWS Secret Access Key"
   region_name:
     type: string
+    label: "AWS Region Name"
+    doc: "The AWS Region Name"
   endpoint_url:
     type: string
+    label: "AWS Endpoint URL"
+    doc: "The AWS Endpoint URL"
   stac_catalog:
     doc: "The folder containing the STAC catalog to stage out"
     label: "STAC Catalog folder"

@@ -126,6 +126,8 @@ $graph:
     steps:
       subworkflow:
         run: "#vegetation_indexes"
+        label: Compute vegetation indexes
+        doc: Compute NDVI and NDWI vegetation indexes from the Landsat-8/9 acquisitions
         in:
           item: items
           aoi: aoi
@@ -139,6 +141,8 @@ $graph:
       
       flatten:
         run: "#flatten_array"
+        label: Flatten Directory[][] → Directory[]
+        doc: Flatten the nested array of Directories into a single array
         in:
           nested: subworkflow/vegetation_indexes
         out:

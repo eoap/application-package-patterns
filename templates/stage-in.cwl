@@ -2,7 +2,8 @@ cwlVersion: v1.0
 
 class: CommandLineTool
 id: my-asthonishing-stage-in-directory
-
+label: "Astonishing Stage-in from STAC Item"
+doc: "Stages in a STAC Item from a given URL"
 inputs:
   reference:
     type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
@@ -15,6 +16,8 @@ inputs:
 outputs:
   staged:
     type: Directory
+    label: "Staged Directory"
+    doc: "The directory containing the staged STAC Item as a STAC catalog"
     outputBinding:
       glob: .
 baseCommand: 

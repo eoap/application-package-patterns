@@ -136,6 +136,8 @@ $graph:
     steps:
       node_crop:
         run: "#crop"
+        label: Crop reflectances
+        doc: Crop the reflectances from the Landsat-8/9 acquisition based on the area of interest and input bands
         in:
           item: item
           aoi: aoi
@@ -148,6 +150,8 @@ $graph:
         scatterMethod: dotproduct
       node_normalized_difference:
         run: "#norm_diff"
+        label: Compute NDWI
+        doc: Compute NDWI from the cropped reflectances
         in:
           rasters:
             source: node_crop/cropped
@@ -157,6 +161,8 @@ $graph:
           - ndwi
       node_otsu:
         run: "#otsu"
+        label: Detect water bodies
+        doc: Detect water bodies based on the otsu threshold from the NDWI
         in:
           raster:
             source: node_normalized_difference/ndwi

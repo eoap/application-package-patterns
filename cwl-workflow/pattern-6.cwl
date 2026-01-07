@@ -118,6 +118,8 @@ $graph:
     steps:
       step:
         run: "#clt"
+        label: Compute NDVI mean
+        doc: Compute NDVI mean from the Landsat-8/9 acquisition
         in:
           item: item
           aoi: aoi

@@ -114,6 +114,8 @@ $graph:
     steps:
       step:
         run: "#clt"
+        label: Compute NDVI and NDWI
+        doc: Compute NDVI and NDWI from Landsat-8/9 acquisitions
         in:
           item: item
           aoi: aoi

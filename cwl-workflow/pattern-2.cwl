@@ -117,6 +117,8 @@ $graph:
     steps:
       step:
         run: "#clt"
+        label: Detect water bodies
+        doc: Detect water bodies based on the NDWI and otsu threshold from Landsat-
         in:
           item_1: item_1
           item_2: item_2

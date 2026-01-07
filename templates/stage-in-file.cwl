@@ -2,7 +2,8 @@ cwlVersion: v1.0
 
 class: CommandLineTool
 id: my-asthonishing-stage-in-file
-
+label: "Astonishing Stage-in from URL"
+doc: "Stages in a file from a given URL"
 inputs:
   reference:
     type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
@@ -15,6 +16,8 @@ inputs:
 outputs:
   staged:
     type: File
+    doc: "The staged file"
+    label: "Staged File"
     outputBinding:
       glob: staged
 baseCommand: 

@@ -124,6 +124,8 @@ $graph:
     steps:
       step:
         run: "#clt"
+        label: Compute vegetation indexes
+        doc: Compute NDVI and NDWI vegetation indexes from the Landsat-8/9 acquisition
         in:
           item: item
           aoi: aoi
