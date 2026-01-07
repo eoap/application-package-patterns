@@ -1,3 +1,5 @@
+import sys
+import graphviz
 from cwl2puml import to_puml, DiagramType
 from cwltool.main import main as cwlmain
 from cwltool.context import LoadingContext, RuntimeContext
@@ -11,9 +13,13 @@ from cwl_loader.utils import search_process
 from PIL import Image
 from plantuml import deflate_and_encode
 from urllib.request import urlopen
+import cwl_loader
+cwl_loader.logger.remove()
+cwl_loader.logger.add(sys.stderr, level="INFO")
 
-from loguru import logger
-logger.remove()
+import eoap_cwlwrap
+eoap_cwlwrap.logger.remove()
+#eoap_cwlwrap.logger.add(sys.stderr, level="INFO")
 
 class WorkflowViewer:
     def __init__(self, cwl_file, workflow, entrypoint):
@@ -68,7 +74,7 @@ class WorkflowViewer:
         out = StringIO()
         to_puml(
             cwl_document=self.workflow,
-            diagram_type=diagram_type,
+            diagram_type=DiagramType.COMPONENT,
             output_stream=out,
             workflow_id=self.entrypoint
         )
