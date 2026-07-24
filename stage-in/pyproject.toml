@@ -34,9 +34,9 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/Fabrice Brito/stage-in#readme"
-Issues = "https://github.com/Fabrice Brito/stage-in/issues"
-Source = "https://github.com/Fabrice Brito/stage-in"
+Documentation = "https://github.com/eoap/application-package-patterns#readme"
+Issues = "https://github.com/eoap/application-package-patterns/issues"
+Source = "https://github.com/eoap/application-package-patterns"
 
 [tool.hatch.version]
 path = "src/stage_in/__about__.py"

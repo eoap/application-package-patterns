@@ -41,7 +41,7 @@ dependencies = [
 allow-direct-references = true
 
 [project.urls]
-Documentation = "https://github.com/eoap/application-package-patterns#README.md"
+Documentation = "https://github.com/eoap/application-package-patterns#readme"
 Issues = "https://github.com/eoap/application-package-patterns/issues"
 Source = "https://github.com/eoap/application-package-patterns"
 
@@ -73,4 +73,3 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
-
