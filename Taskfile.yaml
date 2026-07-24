@@ -5,6 +5,35 @@ includes:
   local: Taskfile-local.yaml
   
 tasks:
+
+  docs:generate:uml:
+    desc: Generate UML documentation
+    cmds:
+    - mkdir -p docs/design
+    - |
+      set -euo pipefail
+      REPO_URL="$(git remote get-url origin)"
+      for SRC_CWL in cwl-workflow/*.cwl; do
+        WORKFLOW_ID="$(basename "${SRC_CWL}" .cwl)"
+        uv run --no-project --with "transpiler-mate>=0.31.0" \
+          transpiler-mate markdown \
+          --workflow-id "${WORKFLOW_ID}" \
+          --output docs/design \
+          --code-repository "${REPO_URL}" \
+          "${SRC_CWL}"
+        uv run --no-project --with cwl2puml \
+          cwl2puml \
+          --workflow-id "${WORKFLOW_ID}" \
+          --output "docs/design/${WORKFLOW_ID}" \
+          --convert-image \
+          --image-format svg \
+          "${SRC_CWL}"
+      done
+
+      find docs/design -type f -name '*.puml' -delete
+
+
+
   build:
   - task: remote:build
 

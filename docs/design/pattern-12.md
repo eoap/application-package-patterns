@@ -1,0 +1,235 @@
+# Water body detection based on NDWI and the otsu threshold v1.0.0
+
+Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 or Landsat-9 staged acquisitions.
+
+> This software is licensed under the terms of the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) license - SPDX short identifier: [Apache-2.0](https://spdx.org/licenses/Apache-2.0)
+>
+> 2025-01-01 - 2026-07-24T17:28:13.495 Copyright [Make Earth Observation Great Again](mailto:info@meoga.com) - > [https://ror.org/9999cx000](https://ror.org/9999cx000)
+
+## Project Team
+
+### Authors
+
+| Name | Email | Organization | Role | Identifier |
+|------|-------|--------------|------|------------|
+| Lane, Lois | [lois.lane@dailyplanet.com](mailto:lois.lane@dailyplanet.com) | [Daily Planet](https://ror.org/0000cx000) | [Project Manager](http://purl.org/spar/datacite/ProjectManager) | [https://orcid.org/0000-9999-0000-9999](https://orcid.org/0000-9999-0000-9999) |
+| Kent, Clark | [clark.kent@dailyplanet.com](mailto:clark.kent@dailyplanet.com) | [Daily Planet](https://ror.org/0000cx000) | [Researcher](http://purl.org/spar/datacite/Researcher) | [https://orcid.org/0000-9999-0000-9999](https://orcid.org/0000-9999-0000-9999) |
+
+
+### Contributors
+
+| Name | Email | Organization | Role | Identifier |
+|------|-------|--------------|------|------------|
+| Luthor, Lex | [lex.luthor@luthorcorp.com](mailto:lex.luthor@luthorcorp.com) | [Luthor Corp](https://ror.org/0000cx000) | []() | [https://orcid.org/0000-9999-0000-9999](https://orcid.org/0000-9999-0000-9999) |
+
+
+
+## User Manual
+
+User Manual can be found on [tps://eoap.github.io/application-package-patterns/](tps://eoap.github.io/application-package-patterns/).
+
+
+## Runtime environment
+
+### Supported Operating Systems
+
+- Linux
+- macOS
+
+### Requirements
+
+- [https://cwltool.readthedocs.io/en/latest/](https://cwltool.readthedocs.io/en/latest/)
+- [https://www.python.org/](https://www.python.org/)
+
+
+## Software Source code
+
+- Browsable version of the [source repository](https://github.com/eoap/application-package-patterns.git);
+- [Continuous integration](https://github.com/eoap/application-package-patterns/actions) system used by the project;
+- Issues, bugs, and feature requests should be submitted to the following [issue management](https://github.com/eoap/application-package-patterns/issues) system for this project
+
+
+---
+
+
+## pattern-12
+
+### CWL Class
+
+[Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow)
+
+### Requirements
+
+* [ScatterFeatureRequirement](https://www.commonwl.org/v1.2/Workflow.html#ScatterFeatureRequirement)
+* [SchemaDefRequirement](https://www.commonwl.org/v1.2/Workflow.html#SchemaDefRequirement)
+
+### Inputs
+
+| Id | Type | Label | Doc |
+|----|------|-------|-----|
+| `aoi` | [BBox](https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#BBox):<ul><li>`bbox`: `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li><li>`crs`: [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`CRS84`</li><li>`CRS84h`</li></ul></li></ul> | area of interest | area of interest as a bounding box |
+| `bands` | `array` of [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | bands used for the NDWI | bands used for the NDWI |
+| `item` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Landsat-8/9 acquisition reference | Landsat-8/9 acquisition reference |
+| `cropped-collection` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> | cropped reflectances STAC Collection | STAC Collection URL for the cropped reflectances |
+| `ndwi-collection` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> | NDWI STAC Collection | STAC Collection URL for the NDWI |
+| `water-bodies-collection` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> | Water bodies STAC Collection | STAC Collection URL for the water bodies |
+
+
+### Steps
+
+| Id | Runs | Label | Doc |
+|----|------|-------|-----|
+| [node_crop](#crop) | `#crop` | Crop reflectances | Crop the reflectances from the Landsat-8/9 acquisition based on the area of interest and input bands |
+| [node_normalized_difference](#norm_diff) | `#norm_diff` | Compute NDWI | Compute NDWI from the cropped reflectances |
+| [node_otsu](#otsu) | `#otsu` | Detect water bodies | Detect water bodies based on the otsu threshold from the NDWI |
+
+
+### Outputs
+
+| Id | Type | Label | Doc |
+|----|------|-------|-----|
+| `cropped` | `array` of [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Cropped reflectances | Cropped reflectances |
+| `ndwi` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Normalized Difference Water Index | Normalized Difference Water Index calculated from the input bands |
+| `water_bodies` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Water bodies detected | Water bodies detected based on the NDWI and otsu threshold |
+
+
+### OGC API - Processes
+
+When `pattern-12` [Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow) is exposed through [OGC API - Processes - Part 1: Core](https://docs.ogc.org/is/18-062r2/18-062r2.html), `inputs` and `outputs` fields below represent the interface of the [getProcessDescription](https://developer.ogc.org/api/processes/index.html#tag/ProcessDescription/operation/getProcessDescription) API. 
+
+
+
+#### Inputs
+
+![pattern-12 OGC API Processes JSON Inputs schema](./pattern-12/ogc_processes_inputs.svg "pattern-12  diagram")
+
+#### Outputs
+
+![pattern-12 OGC API Processes JSON Outputs schema](./pattern-12/ogc_processes_outputs.svg "pattern-12  diagram")
+
+
+### UML Diagrams
+
+
+#### Activity diagram
+
+Learn more about the [Activity diagram](https://en.wikipedia.org/wiki/Activity_diagram) below.
+
+![pattern-12 flow diagram](./pattern-12/activity.svg "pattern-12 Activity diagram")
+
+#### Component diagram
+
+Learn more about the [Component diagram](https://en.wikipedia.org/wiki/Component_diagram) below.
+
+![pattern-12 flow diagram](./pattern-12/component.svg "pattern-12 Component diagram")
+
+#### Class diagram
+
+Learn more about the [Class diagram](https://en.wikipedia.org/wiki/Class_diagram) below.
+
+![pattern-12 flow diagram](./pattern-12/class.svg "pattern-12 Class diagram")
+
+#### Sequence diagram
+
+Learn more about the [Sequence diagram](https://en.wikipedia.org/wiki/Sequence_diagram) below.
+
+![pattern-12 flow diagram](./pattern-12/sequence.svg "pattern-12 Sequence diagram")
+
+#### State diagram
+
+Learn more about the [State diagram](https://en.wikipedia.org/wiki/State_diagram) below.
+
+![pattern-12 flow diagram](./pattern-12/state.svg "pattern-12 State diagram")
+
+
+### Run in step
+
+`node_crop`
+
+
+
+## crop
+
+### CWL Class
+
+[CommandLineTool](https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool)
+
+### Inputs
+
+| Id | Option | Type |
+|----|------|-------|
+| `item` | `--input-item` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
+| `aoi` | `--aoi` | [BBox](https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#BBox):<ul><li>`bbox`: `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li><li>`crs`: [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`CRS84`</li><li>`CRS84h`</li></ul></li></ul> |
+| `epsg` | `--epsg` | [BBox](https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#BBox):<ul><li>`bbox`: `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li><li>`crs`: [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`CRS84`</li><li>`CRS84h`</li></ul></li></ul> |
+| `band` | `--band` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
+| `collection` | `--collection` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
+
+### Execution usage example:
+
+```
+runner crop-cli \
+--input-item <ITEM> \
+--aoi <AOI> \
+--epsg <EPSG> \
+--band <BAND> \
+--collection <COLLECTION>
+```
+
+### Run in step
+
+`node_normalized_difference`
+
+
+
+## norm_diff
+
+### CWL Class
+
+[CommandLineTool](https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool)
+
+### Inputs
+
+| Id | Option | Type |
+|----|------|-------|
+| `rasters` | `--rasters` | `array` of [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
+| `item` | `--item` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
+| `collection` | `--collection` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
+
+### Execution usage example:
+
+```
+runner ndi-cli \
+--rasters <RASTERS> \
+--item <ITEM> \
+--collection <COLLECTION>
+```
+
+### Run in step
+
+`node_otsu`
+
+
+
+## otsu
+
+### CWL Class
+
+[CommandLineTool](https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool)
+
+### Inputs
+
+| Id | Option | Type |
+|----|------|-------|
+| `raster` | `--input-ndi` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
+| `item` | `--item` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
+| `collection` | `--collection` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
+
+### Execution usage example:
+
+```
+runner otsu-cli \
+--input-ndi <RASTER> \
+--item <ITEM> \
+--collection <COLLECTION>
+```
+

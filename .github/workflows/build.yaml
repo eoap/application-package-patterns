@@ -3,13 +3,18 @@ on:
   push:
     branches:
     - develop
+    - fixes
     - main
 
     paths:
     # Only rebuild website when apps have changed
     - 'cwl-workflow/**'
+    - 'templates/**'
     - .github/**
     - runner/**
+    - stage-in/**
+    - stage-in-file/**
+    - stage-out/**
     - codemeta.json
 jobs:
   validate:
@@ -69,7 +74,7 @@ jobs:
 
     strategy:
       matrix:
-        step: ['runner']
+        step: ['runner', 'stage-in', 'stage-in-file', 'stage-out']
 
     steps:
     - uses: actions/checkout@v2
@@ -181,6 +186,70 @@ jobs:
         NAME=${{ secrets.CR_REPO }}/${{ secrets.CR_PROJECT }}/${{matrix.step}}:${{needs.version.outputs.app-version}}
 
         echo "${{ secrets.CR_PASSWORD }}" | oras login "${{ secrets.CR_REPO }}" -u "${{ secrets.CR_USERNAME }}" --password-stdin
+
+        oras push "$NAME" \
+          --artifact-type application/cwl \
+          "$FILE:application/cwl"
+
+  publish-template-artifacts:
+
+    needs:
+    - create-release
+    - version
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+        - template_id: stage-in-template
+          template_file: templates/stage-in.cwl
+          image_name: stage-in
+        - template_id: stage-in-file-template
+          template_file: templates/stage-in-file.cwl
+          image_name: stage-in-file
+        - template_id: stage-out-template
+          template_file: templates/stage-out.cwl
+          image_name: stage-out
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - run: |
+        set -euo pipefail
+        tag="ghcr.io/eoap/application-package-patterns/${{ matrix.image_name }}:${{needs.version.outputs.app-version}}"
+        docker pull "${tag}"
+        shatag="$(docker inspect "${tag}" | yq -r '.[0]["RepoDigests"][0]')"
+        yq -i eval '.requirements.DockerRequirement.dockerPull = strenv(shatag)' "${{ matrix.template_file }}"
+    - name: Cleanup downloads folder
+      run: rm -rf downloads/*
+    - run: |
+        mkdir -p downloads
+        cp "${{ matrix.template_file }}" "downloads/${{ matrix.template_id }}.${{needs.version.outputs.app-version}}.cwl"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: application-package-${{ matrix.template_id }}
+        path: downloads
+        overwrite: true
+    - name: upload template release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{needs.create-release.outputs.upload_url}}
+        asset_path: downloads/${{ matrix.template_id }}.${{needs.version.outputs.app-version}}.cwl
+        asset_name: ${{ matrix.template_id }}.${{needs.version.outputs.app-version}}.cwl
+        asset_content_type: text/yaml
+    - name: Setup ORAS CLI
+      uses: oras-project/setup-oras@v1
+    - name: Push template CWL as OCI Artifact to GHCR
+      run: |
+        set -euo pipefail
+        cd downloads
+        FILE=${{ matrix.template_id }}.${{needs.version.outputs.app-version}}.cwl
+        NAME=ghcr.io/eoap/application-package-patterns/${{ matrix.template_id }}:${{needs.version.outputs.app-version}}
+
+        echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
 
         oras push "$NAME" \
           --artifact-type application/cwl \

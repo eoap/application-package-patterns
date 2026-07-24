@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "stage-in"
+name = "stage-in-file"
 dynamic = ["version"]
-description = ''
+description = "Stage a remote file from a URL into the local workspace."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
@@ -25,40 +25,38 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "stac-asset>=0.4.7",
-  "boto3==1.35.36",
-  "pystac==0.17.0",
-  "loguru>=0.7.3",
-  "click>=8.4.2",
-  "pyyaml>=6.0.3",
+  "click",
+  "planetary-computer",
+  "requests",
 ]
 
 [project.urls]
-Documentation = "https://github.com/Fabrice Brito/stage-in#readme"
-Issues = "https://github.com/Fabrice Brito/stage-in/issues"
-Source = "https://github.com/Fabrice Brito/stage-in"
+Documentation = "https://github.com/eoap/application-package-patterns#readme"
+Issues = "https://github.com/eoap/application-package-patterns/issues"
+Source = "https://github.com/eoap/application-package-patterns"
 
 [tool.hatch.version]
-path = "src/stage_in/__about__.py"
+path = "src/stage_in_file/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
   "mypy>=1.0.0",
 ]
+
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/stage_in tests}"
+check = "mypy --install-types --non-interactive {args:src/stage_in_file tests}"
 
 [tool.coverage.run]
-source_pkgs = ["stage_in", "tests"]
+source_pkgs = ["stage_in_file", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/stage_in/__about__.py",
+  "src/stage_in_file/__about__.py",
 ]
 
 [tool.coverage.paths]
-stage_in = ["src/stage_in", "*/stage-in/src/stage_in"]
-tests = ["tests", "*/stage-in/tests"]
+stage_in_file = ["src/stage_in_file", "*/stage-in-file/src/stage_in_file"]
+tests = ["tests", "*/stage-in-file/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -68,4 +66,4 @@ exclude_lines = [
 ]
 
 [project.scripts]
-stage-in = "stage_in.app:cli"
+stage-in-file = "stage_in_file.app:cli"
