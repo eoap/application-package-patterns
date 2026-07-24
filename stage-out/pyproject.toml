@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
   "boto3==1.35.36",
   "click",
-  "pystac",
+  "pystac>=1.15.1",
 ]
 
 [project.urls]
