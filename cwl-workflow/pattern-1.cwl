@@ -25,10 +25,27 @@ s:softwareRequirements:
 - https://www.python.org/
 
 s:softwareVersion: 1.0.0
+s:applicationCategory: "Earth Observation application package"
+s:thumbnail:
+  '@type': s:ImageObject
+  s:contentUrl: "https://s3.waw3-2.cloudferro.com/swift/v1/stac-png/S2_L2A.jpg"
+  s:caption: "Water bodies detected based on the NDWI and otsu threshold"
+  s:encodingFormat: "image/jpeg"
+  s:height: "360"
+  s:width: "640"
 s:softwareHelp:
 - '@type': s:CreativeWork
   s:name: User Manual
-  s:url: tps://eoap.github.io/application-package-patterns/
+  s:url: https://eoap.github.io/application-package-patterns/
+  s:encodingFormat: "text/html"
+
+s:additionalProperty:
+- '@type': s:PropertyValue
+  s:name: application-type
+  s:value: delineation
+- '@type': s:PropertyValue
+  s:name: domain
+  s:value: hydrology
 
 s:publisher:
   '@type': s:Organization
@@ -74,7 +91,6 @@ s:contributor:
     '@type': s:Organization
     s:name: Luthor Corp
     s:identifier: https://ror.org/0000cx000 
-
 $graph:
   - class: Workflow
     id: pattern-1
@@ -164,5 +180,4 @@ $graph:
         outputBinding:
             glob: .
         type: Directory
-
 

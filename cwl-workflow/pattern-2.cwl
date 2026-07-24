@@ -25,10 +25,18 @@ s:softwareRequirements:
 - https://www.python.org/
 
 s:softwareVersion: 1.0.0
+s:applicationCategory: "Earth Observation application package"
+s:additionalProperty:
+  - '@type': s:PropertyValue
+    s:name: application-type
+    s:value: delineation
+  - '@type': s:PropertyValue
+    s:name: domain
+    s:value: hydrology
 s:softwareHelp:
 - '@type': s:CreativeWork
   s:name: User Manual
-  s:url: tps://eoap.github.io/application-package-patterns/
+  s:url: https://eoap.github.io/application-package-patterns/
 
 s:publisher:
   '@type': s:Organization
@@ -74,7 +82,6 @@ s:contributor:
     '@type': s:Organization
     s:name: Luthor Corp
     s:identifier: https://ror.org/0000cx000 
-
 $graph:
   - class: Workflow
     id: pattern-2
@@ -173,5 +180,4 @@ $graph:
         outputBinding:
             glob: .
         type: Directory
-
 
