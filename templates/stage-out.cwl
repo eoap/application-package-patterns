@@ -1,23 +1,112 @@
 cwlVersion: v1.0
 
+$namespaces:
+  s: "https://schema.org/"
+s:name: Super Stage-out to S3
+s:description: Stage-out the results to S3
+s:dateCreated: "2025-01-01"
+s:license:
+  "@type": "s:CreativeWork"
+  s:identifier: Apache-2.0
+  s:name: Apache License 2.0
+  s:url: "https://spdx.org/licenses/Apache-2.0.html"
+s:keywords:
+  - CWL
+  - Workflow
+  - Earth Observation
+s:operatingSystem:
+  - Linux
+  - macOS
+  - macOS Server
+s:softwareRequirements:
+  - "https://cwltool.readthedocs.io/en/latest/"
+  - "https://www.python.org/"
+s:softwareVersion: 1.0.0
+s:softwareHelp:
+  - "@type": "s:CreativeWork"
+    s:name: User Manual
+    s:url: "https://eoap.github.io/application-package-patterns/pattern-1/"
+s:publisher:
+  "@type": "s:Organization"
+  s:name: Make Earth Observation Great Again
+  s:email: "info@meoga.com"
+  s:identifier: "https://ror.org/9999cx000"
+s:author:
+  - "@type": "s:Role"
+    s:roleName: Project administration
+    s:startDate: "2025-01-01"
+    s:additionalType: "https://credit.niso.org/contributor-roles/project-administration/"
+    s:author:
+      "@type": "s:Person"
+      s:givenName: Lois
+      s:familyName: Lane
+      s:email: "lois.lane@meoga.com"
+      s:identifier: "https://orcid.org/0000-9999-0000-9999"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: Make Earth Observation Great Again
+        s:email: "info@meoga.com"
+        s:identifier: "https://ror.org/9999cx000"
+  - "@type": "s:Role"
+    s:roleName: Supervision
+    s:startDate: "2025-01-01"
+    s:additionalType: "https://credit.niso.org/contributor-roles/supervision/"
+    s:author:
+      "@type": "s:Person"
+      s:givenName: Clark
+      s:familyName: Kent
+      s:email: "clark.kent@meoga.com"
+      s:identifier: "https://orcid.org/9999-0000-9999-0000"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: Make Earth Observation Great Again
+        s:email: "info@meoga.com"
+        s:identifier: "https://ror.org/9999cx000"
+s:contributor:
+  - "@type": "s:Role"
+    s:roleName: Software
+    s:startDate: "2025-01-01"
+    s:additionalType: "https://credit.niso.org/contributor-roles/software/"
+    s:contributor:
+      "@type": "s:Person"
+      s:givenName: Lex
+      s:familyName: Luthor
+      s:email: "lex.luthor@meoga.com"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: Make Earth Observation Great Again
+        s:email: "info@meoga.com"
+        s:identifier: "https://ror.org/9999cx000"
 
 class: CommandLineTool
 id: my-super-stage-out
-
+label: "Super Stage-out to S3"
 doc: "Stage-out the results to S3"
 inputs:
   s3_bucket:
     type: string
+    label: "S3 Bucket name"
+    doc: "The name of the S3 bucket to stage out to"
   sub_path:
     type: string
+    label: "Sub-path in S3 bucket"
+    doc: "The sub-path within the S3 bucket to stage out to"
   aws_access_key_id:
     type: string
+    label: "AWS Access Key ID"
+    doc: "The AWS Access Key ID"
   aws_secret_access_key:
     type: string
+    label: "AWS Secret Access Key"
+    doc: "The AWS Secret Access Key"
   region_name:
     type: string
+    label: "AWS Region Name"
+    doc: "The AWS Region Name"
   endpoint_url:
     type: string
+    label: "AWS Endpoint URL"
+    doc: "The AWS Endpoint URL"
   stac_catalog:
     doc: "The folder containing the STAC catalog to stage out"
     label: "STAC Catalog folder"
