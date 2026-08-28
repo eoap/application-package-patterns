@@ -1,6 +1,7 @@
+cwlVersion: v1.0
+
 $namespaces:
   s: "https://schema.org/"
-"@type": "s:SoftwareApplication"
 s:name: Astonishing Stage-in from STAC Item
 s:description: Stages in a STAC Item from a given URL
 s:dateCreated: "2025-01-01"
@@ -77,7 +78,6 @@ s:contributor:
         s:email: "info@meoga.com"
         s:identifier: "https://ror.org/9999cx000"
 
-cwlVersion: v1.0
 class: CommandLineTool
 id: my-asthonishing-stage-in-directory
 label: "Astonishing Stage-in from STAC Item"

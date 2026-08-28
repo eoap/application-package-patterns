@@ -1,6 +1,7 @@
+cwlVersion: v1.0
+
 $namespaces:
   s: "https://schema.org/"
-"@type": "s:SoftwareApplication"
 s:name: Super Stage-out to S3
 s:description: Stage-out the results to S3
 s:dateCreated: "2025-01-01"
@@ -77,7 +78,6 @@ s:contributor:
         s:email: "info@meoga.com"
         s:identifier: "https://ror.org/9999cx000"
 
-cwlVersion: v1.0
 class: CommandLineTool
 id: my-super-stage-out
 label: "Super Stage-out to S3"
