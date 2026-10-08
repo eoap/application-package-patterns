@@ -10,6 +10,7 @@ on:
     - 'cwl-workflow/**'
     - .github/**
     - runner/**
+    - pyproject.toml
     - codemeta.json
 jobs:
   validate:
