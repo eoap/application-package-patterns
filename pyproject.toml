@@ -25,7 +25,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "eoap-cwlwrap>=0.16.0",
+  # Keep the wrap_locations API and eoap-cwlwrap CLI used by this project.
+  "eoap-cwlwrap==0.30.0",
   "nose2", 
   "cwltool",
   "ipykernel",

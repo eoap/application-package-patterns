@@ -5,6 +5,35 @@ includes:
   local: Taskfile-local.yaml
   
 tasks:
+  generate_pattern_doc:
+    cmds:
+      - |
+        transpiler-mate cwl2markdown --output ./docs ./cwl-workflow/pattern-{{.PATTERN_INDEX}}.cwl#pattern-{{.PATTERN_INDEX}}
+      - |
+        transpiler-mate cwl2puml --convert-image --image-format svg --output ./docs ./cwl-workflow/pattern-{{.PATTERN_INDEX}}.cwl
+
+  generate_mkdoc:
+    cmds:
+      - pip install "transpiler-mate-runtime @ git+https://github.com/sim13pods/transpiler-mate-runtime.git@main"
+      - pip install "cwl2markdown @ git+https://github.com/sim13pods/cwl2markdown.git@main"
+      - pip install "cwl2puml @ git+https://github.com/Terradue/cwl2puml.git@transpiler-mate"
+      - for:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
+          - '10'
+          - '11'
+          - '12'
+        task: generate_pattern_doc
+        vars:
+          PATTERN_INDEX: '{{.ITEM}}'
+
   build:
   - task: remote:build
 

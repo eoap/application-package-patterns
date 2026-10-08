@@ -1,8 +1,10 @@
 site_name: Application Packages patterns
+repo_url: https://github.com/eoap/application-package-patterns/
+repo_name: eoap/application-package-patterns
 
 theme:
     logo: imgs/icon-eoap.png
-    name: material
+    name: readthedocs
 
     palette:
     - media: "(prefers-color-scheme: light)"
@@ -56,17 +58,17 @@ extra_javascript:
 
 nav:
   - Introduction: 'index.md'
-  - Pattern 1: pattern-1.ipynb
-  - Pattern 2: pattern-2.ipynb
-  - Pattern 3: pattern-3.ipynb
-  - Pattern 4: pattern-4.ipynb
-  - Pattern 5: pattern-5.ipynb
-  - Pattern 6: pattern-6.ipynb
-  - Pattern 7: pattern-7.ipynb
-  - Pattern 8: pattern-8.ipynb
-  - Pattern 9: pattern-9.ipynb
-  - Pattern 10: pattern-10.ipynb
-  - Pattern 11: pattern-11.ipynb
-  - Pattern 12: pattern-12.ipynb
+  - Pattern 1: pattern-1.md
+  - Pattern 2: pattern-2.md
+  - Pattern 3: pattern-3.md
+  - Pattern 4: pattern-4.md
+  - Pattern 5: pattern-5.md
+  - Pattern 6: pattern-6.md
+  - Pattern 7: pattern-7.md
+  - Pattern 8: pattern-8.md
+  - Pattern 9: pattern-9.md
+  - Pattern 10: pattern-10.md
+  - Pattern 11: pattern-11.md
+  - Pattern 12: pattern-12.md
 
-copyright: <a href="https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg">License CC BY-SA 4.0</a>, by <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</a>
+copyright: <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue"" alt="Apache License, Version 2.0" /></a>

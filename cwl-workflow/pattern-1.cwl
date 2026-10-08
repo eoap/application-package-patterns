@@ -1,57 +1,97 @@
-cwlVersion: v1.0
 $namespaces:
-  s: https://schema.org/
+  s: "https://schema.org/"
+"@type": "s:SoftwareApplication"
+s:name: Pattern 1 - Water bodies detection based on NDWI and the otsu threshold
+s:description: |
+  * one input parameter of type `Directory`
+  * one output parameter of type `Directory`
 
-schemas:
-  - http://schema.org/version/9.0/schemaorg-current-http.rdf
+    This scenario typically takes one input, applies an algorithm and produces a result
 
-s:softwareVersion: 1.0.0
-
-s:applicationCategory: "Earth Observation application package"
-s:keywords:
-- '@type': s:DefinedTerm
-  s:name: application-type
-  s:description: delineation
-- '@type': s:DefinedTerm
-  s:name: domain
-  s:description: hydrology
-
-s:thumbnail: 
-  '@type': s:ImageObject
-  s:contentUrl: "https://s3.waw3-2.cloudferro.com/swift/v1/stac-png/S2_L2A.jpg"
-  s:caption: "Water bodies detected based on the NDWI and otsu threshold"
-  s:encodingFormat: "image/jpeg"
-  s:height: "360"
-  s:width: "640"
-
-
+  Implementation: delineate water bodies using NDWI and Otsu automatic threshold taking as input a Landsat-8/9 acquisition
+s:dateCreated: "2025-01-01"
 s:license:
-  '@type': s:CreativeWork
-  s:name: "License CC BY 4.0"
-  s:url: "https://creativecommons.org/licenses/by/4.0/"
-  s:encodingFormat: "text/html"
-
+  "@type": "s:CreativeWork"
+  s:identifier: Apache-2.0
+  s:name: Apache License 2.0
+  s:url: "https://spdx.org/licenses/Apache-2.0.html"
+s:keywords:
+  - CWL
+  - Workflow
+  - Earth Observation
+s:operatingSystem:
+  - Linux
+  - macOS
+  - macOS Server
+s:softwareRequirements:
+  - "https://cwltool.readthedocs.io/en/latest/"
+  - "https://www.python.org/"
+s:softwareVersion: 1.0.0
 s:softwareHelp:
-- '@type': s:CreativeWork
-  s:name: "User Manual"
-  s:url: "https://eoap.github.io/application-package-patterns/"
-  s:encodingFormat: "text/html"
-
+  - "@type": "s:CreativeWork"
+    s:name: User Manual
+    s:url: "https://eoap.github.io/application-package-patterns/pattern-1/"
+s:publisher:
+  "@type": "s:Organization"
+  s:name: Make Earth Observation Great Again
+  s:email: "info@meoga.com"
+  s:identifier: "https://ror.org/9999cx000"
 s:author:
-  '@type': s:Person
-  s:givenName: "John"
-  s:familyName: "Doe"
-  s:affiliation:
-    '@type': s:Organization
-    s:name: "Make EO Great Again Platform"
-  s:email: "john.doe@meogap.org"
-  
+  - "@type": "s:Role"
+    s:roleName: Project administration
+    s:startDate: "2025-01-01"
+    s:additionalType: "https://credit.niso.org/contributor-roles/project-administration/"
+    s:author:
+      "@type": "s:Person"
+      s:givenName: Lois
+      s:familyName: Lane
+      s:email: "lois.lane@meoga.com"
+      s:identifier: "https://orcid.org/0000-9999-0000-9999"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: Make Earth Observation Great Again
+        s:email: "info@meoga.com"
+        s:identifier: "https://ror.org/9999cx000"
+  - "@type": "s:Role"
+    s:roleName: Supervision
+    s:startDate: "2025-01-01"
+    s:additionalType: "https://credit.niso.org/contributor-roles/supervision/"
+    s:author:
+      "@type": "s:Person"
+      s:givenName: Clark
+      s:familyName: Kent
+      s:email: "clark.kent@meoga.com"
+      s:identifier: "https://orcid.org/9999-0000-9999-0000"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: Make Earth Observation Great Again
+        s:email: "info@meoga.com"
+        s:identifier: "https://ror.org/9999cx000"
+s:contributor:
+  - "@type": "s:Role"
+    s:roleName: Software
+    s:startDate: "2025-01-01"
+    s:additionalType: "https://credit.niso.org/contributor-roles/software/"
+    s:contributor:
+      "@type": "s:Person"
+      s:givenName: Lex
+      s:familyName: Luthor
+      s:email: "lex.luthor@meoga.com"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: Make Earth Observation Great Again
+        s:email: "info@meoga.com"
+        s:identifier: "https://ror.org/9999cx000"
+
+cwlVersion: v1.0
 $graph:
   - class: Workflow
     id: pattern-1
     label: Water bodies detection based on NDWI and the otsu threshold
     doc: Water bodies detection based on NDWI and otsu threshold applied to a single Landsat-8/9 acquisition
     requirements: []
+    hints:
+    - class: eoap:JSONSchemaHint
     inputs:
       aoi:
         label: area of interest
@@ -133,5 +173,3 @@ $graph:
         outputBinding:
             glob: .
         type: Directory
-
-
