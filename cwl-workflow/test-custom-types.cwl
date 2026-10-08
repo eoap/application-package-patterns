@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 schemas:
 - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $namespaces:
@@ -28,7 +28,7 @@ s:softwareVersion: 1.0.0
 s:softwareHelp:
 - '@type': s:CreativeWork
   s:name: User Manual
-  s:url: tps://eoap.github.io/application-package-patterns/
+  s:url: https://eoap.github.io/application-package-patterns/
 
 s:publisher:
   '@type': s:Organization
@@ -267,6 +267,3 @@ $graph:
           loadContents: true
           outputEval: $(self[0].contents)
         type: string
-
-
-  
