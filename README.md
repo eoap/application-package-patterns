@@ -124,3 +124,20 @@ The CWL includes:
 - output parameter of type `Directory[]`
 
 This scenario takes as input an array of acquisition, applies an algorithm to each of them. 
+## Typed CWL development
+
+The feature checkout uses CWL v1.2 with embedded URI, bounding box, CRS,
+spectral band and vegetation index definitions. Existing shared OGC and
+GeoJSON schemas remain explicit imports. Metadata and port documentation are
+validated by `python scripts/cwl-docs.py --validate --output /tmp/cwl-docs`.
+
+Notebooks use current eoap-cwlwrap/cwl-loader APIs and serialize composed
+processes with dump_cwl. Wrapper-introduced URI definitions are embedded in
+the resulting document. Diagram rendering uses local Graphviz and displays
+PlantUML source. Ordinary box labels avoid Graphviz record-node flat-edge
+failures. Python 3.12 or newer is required.
+
+Staging retries incomplete network transfers at most three times, retaining
+completed assets; exhausted retries and non-network failures remain errors.
+Kubernetes deployment and notebook acceptance tasks are maintained in the
+`application-package-patterns` folder of dev-platform-eoap.
