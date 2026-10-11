@@ -11,72 +11,72 @@ skinparam linetype ortho
 
 node "Workflow 'pattern-4'" {
     component "pattern-4" as pattern_4 {
-    
+
         portin "aoi" as pattern_4_aoi
-    
+
         portin "epsg" as pattern_4_epsg
-    
+
         portin "item" as pattern_4_item
-    
-    
+
+
         portout "ndvi" as pattern_4_ndvi
-    
+
         portout "ndwi" as pattern_4_ndwi
-    
+
     }
 
 
     frame "step" as pattern_4_step {
-    
-        portin "item" as pattern_4_step_item
-        
-            
-                
-        pattern_4_item .down.> pattern_4_step_item
-            
-        
-    
-        portin "aoi" as pattern_4_step_aoi
-        
-            
-                
-        pattern_4_aoi .down.> pattern_4_step_aoi
-            
-        
-    
-        portin "epsg" as pattern_4_step_epsg
-        
-            
-                
-        pattern_4_epsg .down.> pattern_4_step_epsg
-            
-        
-    
 
-    
+        portin "item" as pattern_4_step_item
+
+
+
+        pattern_4_item .down.> pattern_4_step_item
+
+
+
+        portin "aoi" as pattern_4_step_aoi
+
+
+
+        pattern_4_aoi .down.> pattern_4_step_aoi
+
+
+
+        portin "epsg" as pattern_4_step_epsg
+
+
+
+        pattern_4_epsg .down.> pattern_4_step_epsg
+
+
+
+
+
         portout "ndvi" as pattern_4_step_ndvi
-    
+
         portout "ndwi" as pattern_4_step_ndwi
-    
+
 
         component "clt" as clt
     }
 
 }
 
-    
-        
-            
+
+
+
 pattern_4_step_ndvi .up.> pattern_4_ndvi
-            
-        
-    
-        
-            
+
+
+
+
+
 pattern_4_step_ndwi .up.> pattern_4_ndwi
-            
-        
-    
+
+
+
 
 
 @enduml

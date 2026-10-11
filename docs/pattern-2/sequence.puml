@@ -17,66 +17,66 @@ activate wfrunner
 control "pattern-2" as pattern_2_or
 activate pattern_2_or
 
-        
+
 wfrunner -> pattern_2_or : ""aoi""
-        
+
 wfrunner -> pattern_2_or : ""epsg""
-        
+
 wfrunner -> pattern_2_or : ""bands""
-        
+
 wfrunner -> pattern_2_or : ""item_1""
-        
+
 wfrunner -> pattern_2_or : ""item_2""
-        
 
 
 
 
-        
-        
-        
+
+
+
+
 participant "step: step\nCommandLineTool: clt" as pattern_2_or__step
 activate pattern_2_or__step
 
-                
-                        
+
+
 pattern_2_or -> pattern_2_or__step : ""item_1"" (from ""item_1"")
-                        
-                
-                        
+
+
+
 pattern_2_or -> pattern_2_or__step : ""item_2"" (from ""item_2"")
-                        
-                
-                        
+
+
+
 pattern_2_or -> pattern_2_or__step : ""aoi"" (from ""aoi"")
-                        
-                
-                        
+
+
+
 pattern_2_or -> pattern_2_or__step : ""epsg"" (from ""epsg"")
-                        
-                
-                        
+
+
+
 pattern_2_or -> pattern_2_or__step : ""band"" (from ""bands"")
-                        
-                
+
+
 
 pattern_2_or__step -> pattern_2_or__step : Compute
 
-                
+
 pattern_2_or <-- pattern_2_or__step : ""stac-catalog""
-                
+
 
 deactivate pattern_2_or__step
-        
 
 
 
 
-        
-                
+
+
+
 wfrunner <-- pattern_2_or : ""water_bodies"" (from ""step/stac-catalog"")
-                
-        
+
+
 
 deactivate pattern_2_or
 

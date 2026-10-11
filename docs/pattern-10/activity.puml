@@ -12,58 +12,58 @@ start
 group pattern-10 {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :epsg; <<input>>
 split again
-    
+
     :indexes; <<input>>
 split again
-    
+
     :items; <<input>>
 end split
-    
 
-    
+
+
 
 repeat
-        
-        
+
+
 group vegetation_indexes {
-            
+
 
 repeat
-        
-        
+
+
 :step: step
 CommandLineTool: clt;
-        
+
 repeat while (dotproduct step/index)
 
 
-}        
-        
+}
+
 repeat while (dotproduct ['subworkflow/item'])
 
 
 
 
-        
-        
+
+
 :step: flatten
 ExpressionTool: flatten_array;
-        
+
 
 
 
 
 split
-    
+
     :vegetation_indexes; <<output>>
 end split
-    
+
 
 }
 

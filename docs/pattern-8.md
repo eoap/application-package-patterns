@@ -87,7 +87,7 @@ User Manual can be found on [https://eoap.github.io/application-package-patterns
 
 ### OGC API - Processes
 
-When `pattern-8` [Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow) is exposed through [OGC API - Processes - Part 1: Core](https://docs.ogc.org/is/18-062r2/18-062r2.html), `inputs` and `outputs` fields below represent the interface of the [getProcessDescription](https://developer.ogc.org/api/processes/index.html#tag/ProcessDescription/operation/getProcessDescription) API. 
+When `pattern-8` [Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow) is exposed through [OGC API - Processes - Part 1: Core](https://docs.ogc.org/is/18-062r2/18-062r2.html), `inputs` and `outputs` fields below represent the interface of the [getProcessDescription](https://developer.ogc.org/api/processes/index.html#tag/ProcessDescription/operation/getProcessDescription) API.
 
 
 
@@ -166,4 +166,3 @@ runner pattern-8 <ARGUMENT_DYNAMICALLY_SET> \
 --band <BAND> \
 --produce_output <PRODUCE_OUTPUT>
 ```
-

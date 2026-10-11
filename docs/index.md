@@ -31,10 +31,8 @@ Creating EO workflows that are portable, reproducible, and platform-agnostic can
  * Operations teams benefit from repeatable deployments to platforms that understand these standardized patterns and can orchestrate CWL workflows accordingly.
  * The entire EO community reaps the reward of shared, interoperable infrastructure, following the FAIR principles and the OGC Earth Observation Application Package best practices
 
-## Further Reading 
+## Further Reading
 
  * [OGC Best Practice for Earth Observation Application Package](https://docs.ogc.org/bp/20-089r1.html)
  * [Getting started on Earth Observation Application Packaging with CWL](https://eoap.github.io/quickwin/)
  * [Building Open Resources for Earth Observation Application Packages](https://discuss.terradue.com/t/1271)
-
-

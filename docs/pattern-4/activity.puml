@@ -12,37 +12,37 @@ start
 group pattern-4 {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :epsg; <<input>>
 split again
-    
+
     :item; <<input>>
 end split
-    
-
-    
 
 
-        
-        
+
+
+
+
+
 :step: step
 CommandLineTool: clt;
-        
+
 
 
 
 
 split
-    
+
     :ndvi; <<output>>
 split again
-    
+
     :ndwi; <<output>>
 end split
-    
+
 
 }
 

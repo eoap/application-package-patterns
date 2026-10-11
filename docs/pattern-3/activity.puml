@@ -12,37 +12,37 @@ start
 group pattern-3 {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :epsg; <<input>>
 split again
-    
+
     :bands; <<input>>
 split again
-    
+
     :items; <<input>>
 end split
-    
 
-    
+
+
 
 repeat
-        
-        
+
+
 :step: step
 CommandLineTool: clt;
-        
+
 repeat while (dotproduct step/item)
 
 
 
 split
-    
+
     :water_bodies; <<output>>
 end split
-    
+
 
 }
 

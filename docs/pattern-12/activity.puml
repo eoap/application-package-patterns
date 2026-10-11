@@ -12,69 +12,69 @@ start
 group pattern-12 {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :bands; <<input>>
 split again
-    
+
     :item; <<input>>
 split again
-    
+
     :cropped-collection; <<input>>
 split again
-    
+
     :ndwi-collection; <<input>>
 split again
-    
+
     :water-bodies-collection; <<input>>
 end split
-    
 
-    
+
+
 
 repeat
-        
-        
+
+
 :step: node_crop
 CommandLineTool: crop;
-        
+
 repeat while (dotproduct node_crop/band)
 
 
 
 
-        
-        
+
+
 :step: node_normalized_difference
 CommandLineTool: norm_diff;
-        
 
 
 
 
 
-        
-        
+
+
+
 :step: node_otsu
 CommandLineTool: otsu;
-        
+
 
 
 
 
 split
-    
+
     :cropped; <<output>>
 split again
-    
+
     :ndwi; <<output>>
 split again
-    
+
     :water_bodies; <<output>>
 end split
-    
+
 
 }
 

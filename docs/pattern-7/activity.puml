@@ -12,40 +12,40 @@ start
 group pattern-7 {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :epsg; <<input>>
 split again
-    
+
     :bands; <<input>>
 split again
-    
+
     :item_1; <<input>>
 split again
-    
+
     :item_2; <<input>>
 end split
-    
-
-    
 
 
-        
-        
+
+
+
+
+
 :step: step
 CommandLineTool: clt;
-        
+
 
 
 
 
 split
-    
+
     :water_bodies; <<output>>
 end split
-    
+
 
 }
 

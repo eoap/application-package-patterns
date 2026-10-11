@@ -12,34 +12,34 @@ start
 group pattern-6 {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :epsg; <<input>>
 split again
-    
+
     :item; <<input>>
 end split
-    
-
-    
 
 
-        
-        
+
+
+
+
+
 :step: step
 CommandLineTool: clt;
-        
+
 
 
 
 
 split
-    
+
     :mean; <<output>>
 end split
-    
+
 
 }
 

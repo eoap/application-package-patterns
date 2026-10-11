@@ -88,7 +88,7 @@ for name, pattern, overrides in cases:
     params.update({'s3_bucket':args.bucket, 'sub_path':f'acceptance/{stamp}/{name}', 'aws_access_key_id':os.environ.get('AWS_ACCESS_KEY_ID','test'), 'aws_secret_access_key':os.environ.get('AWS_SECRET_ACCESS_KEY','test'), 'region_name':'us-east-1', 'endpoint_url':{'value':args.endpoint}})
     workflow = wrapping.compose(pattern, target / 'wrapped.cwl')
     job = target / 'params.json'; job.write_text(json.dumps(params))
-    command = ['/opt/calrissian-venv/bin/calrissian','--max-ram','16G','--max-cores','8','--pod-serviceaccount','calrissian-sa','--tmp-outdir-prefix',str(target / 'tmp') + '/', '--outdir',str(target / 'results'),'--usage-report',str(target / 'usage.json'),'--tool-logs-basepath',str(target / 'logs')]
+    command = ['/opt/calrissian-venv/bin/calrissian','--max-ram','16G','--max-cores','8','--pod-serviceaccount','calrissian-sa','--tmpdir-prefix',str(target / 'tmp') + '/', '--outdir',str(target / 'results'),'--usage-report',str(target / 'usage.json'),'--tool-logs-basepath',str(target / 'logs')]
     if args.runner == 'cwltool': command = ['cwltool','--podman','--outdir',str(target / 'results')]
     command += ['--cachedir',str(args.output / 'cache'),str(workflow) + '#main',str(job)]
     print(f'Running {name}', flush=True)

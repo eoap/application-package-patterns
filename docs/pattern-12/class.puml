@@ -14,27 +14,27 @@
 
 
 
-    
-        
-            
-        
-            package "Schemas" {
-                
-                    
 
-                    
+
+
+
+            package "Schemas" {
+
+
+
+
                         +enum CRS {
 
         CRS84
-        
-        CRS84h
-        
-    }
-                    
-                
-                    
 
-                    
+        CRS84h
+
+    }
+
+
+
+
+
                         +record BBox {
 
         +bbox: double[]
@@ -47,11 +47,11 @@
 
     BBox --> CRS
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record Date {
 
         +value: string
@@ -60,11 +60,11 @@
 
     ' no need to add a Date --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record DateTime {
 
         +value: string
@@ -73,11 +73,11 @@
 
     ' no need to add a DateTime --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record Duration {
 
         +value: string
@@ -86,11 +86,11 @@
 
     ' no need to add a Duration --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record Email {
 
         +value: string
@@ -99,11 +99,11 @@
 
     ' no need to add a Email --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record Hostname {
 
         +value: string
@@ -112,11 +112,11 @@
 
     ' no need to add a Hostname --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record IDNEmail {
 
         +value: string
@@ -125,11 +125,11 @@
 
     ' no need to add a IDNEmail --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record IDNHostname {
 
         +value: string
@@ -138,11 +138,11 @@
 
     ' no need to add a IDNHostname --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record IPv4 {
 
         +value: string
@@ -151,11 +151,11 @@
 
     ' no need to add a IPv4 --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record IPv6 {
 
         +value: string
@@ -164,11 +164,11 @@
 
     ' no need to add a IPv6 --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record IRI {
 
         +value: string
@@ -177,11 +177,11 @@
 
     ' no need to add a IRI --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record IRIReference {
 
         +value: string
@@ -190,11 +190,11 @@
 
     ' no need to add a IRIReference --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record JsonPointer {
 
         +value: string
@@ -203,11 +203,11 @@
 
     ' no need to add a JsonPointer --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record Password {
 
         +value: string
@@ -216,11 +216,11 @@
 
     ' no need to add a Password --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record RelativeJsonPointer {
 
         +value: string
@@ -229,11 +229,11 @@
 
     ' no need to add a RelativeJsonPointer --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record UUID {
 
         +value: string
@@ -242,11 +242,11 @@
 
     ' no need to add a UUID --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record URI {
 
         +value: string
@@ -255,11 +255,11 @@
 
     ' no need to add a URI --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record URIReference {
 
         +value: string
@@ -268,11 +268,11 @@
 
     ' no need to add a URIReference --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record URITemplate {
 
         +value: string
@@ -281,11 +281,11 @@
 
     ' no need to add a URITemplate --> string
 
-                    
-                
-                    
 
-                    
+
+
+
+
                         +record Time {
 
         +value: string
@@ -294,238 +294,238 @@
 
     ' no need to add a Time --> string
 
-                    
-                
+
+
             }
-            
-        
-    
+
+
+
 
     package "Water body detection based on NDWI and the otsu threshold" {
 
-    
+
 
     +class "pattern-12" as Workflow_pattern_12 extends Workflow {
         __ Inputs __
-        
+
         + aoi: BBox
-        
+
         + bands: string[] = ['green', 'nir']
-        
+
         + item: Directory
-        
+
         + cropped-collection: URI
-        
+
         + ndwi-collection: URI
-        
+
         + water-bodies-collection: URI
-        
+
 
         __ Outputs __
-        
-        + cropped: Directory[]
-        
-        + ndwi: Directory
-        
-        + water_bodies: Directory
-        
 
-        
+        + cropped: Directory[]
+
+        + ndwi: Directory
+
+        + water_bodies: Directory
+
+
+
         __ Steps __
-            
+
         - node_crop: crop
-            
+
         - node_normalized_difference: norm_diff
-            
+
         - node_otsu: otsu
-            
-        
+
+
     }
-    
-        
+
+
 
         Workflow_pattern_12 --> BBox
-    
-        
+
+
 
         ' no need to add a Workflow_pattern_12 --> string
-    
-        
+
+
 
         ' no need to add a Workflow_pattern_12 --> Directory
-    
-        
+
+
 
         Workflow_pattern_12 --> URI
-    
-        
+
+
 
         Workflow_pattern_12 --> URI
-    
-        
+
+
 
         Workflow_pattern_12 --> URI
-    
 
-    
+
+
     package "Steps" {
-        
-            
 
-            
-                
-                    
+
+
+
+
+
 
     +class "crop" as CommandLineTool_crop extends CommandLineTool {
         __ Inputs __
-        
+
         + item: Directory
-        
+
         + aoi: BBox
-        
+
         + epsg: BBox
-        
+
         + band: string
-        
+
         + collection: URI
-        
+
 
         __ Outputs __
-        
-        + cropped: Directory
-        
 
-        
+        + cropped: Directory
+
+
+
     }
-    
-        
+
+
 
         ' no need to add a CommandLineTool_crop --> Directory
-    
-        
+
+
 
         CommandLineTool_crop --> BBox
-    
-        
+
+
 
         CommandLineTool_crop --> BBox
-    
-        
+
+
 
         ' no need to add a CommandLineTool_crop --> string
-    
-        
+
+
 
         CommandLineTool_crop --> URI
-    
-                
-Workflow_pattern_12 --> CommandLineTool_crop
-            
-        
-            
 
-            
-                
-                    
+
+Workflow_pattern_12 --> CommandLineTool_crop
+
+
+
+
+
+
+
 
     +class "norm_diff" as CommandLineTool_norm_diff extends CommandLineTool {
         __ Inputs __
-        
+
         + rasters: Directory[]
-        
+
         + item: Directory
-        
+
         + collection: URI
-        
+
 
         __ Outputs __
-        
+
         + ndwi: Directory
-        
 
-        
+
+
     }
-    
-        
+
+
 
         ' no need to add a CommandLineTool_norm_diff --> Directory
-    
-        
+
+
 
         ' no need to add a CommandLineTool_norm_diff --> Directory
-    
-        
+
+
 
         CommandLineTool_norm_diff --> URI
-    
-                
-Workflow_pattern_12 --> CommandLineTool_norm_diff
-            
-        
-            
 
-            
-                
-                    
+
+Workflow_pattern_12 --> CommandLineTool_norm_diff
+
+
+
+
+
+
+
 
     +class "otsu" as CommandLineTool_otsu extends CommandLineTool {
         __ Inputs __
-        
+
         + raster: Directory
-        
+
         + item: Directory
-        
+
         + collection: URI
-        
+
 
         __ Outputs __
-        
+
         + water_bodies: Directory
-        
 
-        
+
+
     }
-    
-        
+
+
 
         ' no need to add a CommandLineTool_otsu --> Directory
-    
-        
+
+
 
         ' no need to add a CommandLineTool_otsu --> Directory
-    
-        
+
+
 
         CommandLineTool_otsu --> URI
-    
-                
-Workflow_pattern_12 --> CommandLineTool_otsu
-            
-        
-    }
-    
 
-    
+
+Workflow_pattern_12 --> CommandLineTool_otsu
+
+
+    }
+
+
+
     package "Requirements" {
-        
-            
+
+
         class ScatterFeatureRequirement
         Workflow_pattern_12 --> ScatterFeatureRequirement
-            
-        
-            
+
+
+
         class SchemaDefRequirement
         Workflow_pattern_12 --> SchemaDefRequirement
-            
-        
-    }
-    
 
-    
-    package "Hints" {
-        
-            
-        
+
     }
-    
+
+
+
+    package "Hints" {
+
+
+
+    }
+
 }

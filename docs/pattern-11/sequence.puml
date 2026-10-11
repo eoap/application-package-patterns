@@ -17,66 +17,66 @@ activate wfrunner
 control "pattern-11" as pattern_11_or
 activate pattern_11_or
 
-        
+
 wfrunner -> pattern_11_or : ""aoi""
-        
+
 wfrunner -> pattern_11_or : ""epsg""
-        
+
 wfrunner -> pattern_11_or : ""bands""
-        
+
 wfrunner -> pattern_11_or : ""item""
-        
+
 wfrunner -> pattern_11_or : ""dem""
-        
 
 
 
 
-        
-        
-        
+
+
+
+
 participant "step: step\nCommandLineTool: clt" as pattern_11_or__step
 activate pattern_11_or__step
 
-                
-                        
+
+
 pattern_11_or -> pattern_11_or__step : ""item"" (from ""item"")
-                        
-                
-                        
+
+
+
 pattern_11_or -> pattern_11_or__step : ""aoi"" (from ""aoi"")
-                        
-                
-                        
+
+
+
 pattern_11_or -> pattern_11_or__step : ""epsg"" (from ""epsg"")
-                        
-                
-                        
+
+
+
 pattern_11_or -> pattern_11_or__step : ""band"" (from ""bands"")
-                        
-                
-                        
+
+
+
 pattern_11_or -> pattern_11_or__step : ""dem"" (from ""dem"")
-                        
-                
+
+
 
 pattern_11_or__step -> pattern_11_or__step : Compute
 
-                
+
 pattern_11_or <-- pattern_11_or__step : ""stac-catalog""
-                
+
 
 deactivate pattern_11_or__step
-        
 
 
 
 
-        
-                
+
+
+
 wfrunner <-- pattern_11_or : ""water_bodies"" (from ""step/stac-catalog"")
-                
-        
+
+
 
 deactivate pattern_11_or
 

@@ -17,66 +17,66 @@ activate wfrunner
 control "pattern-8" as pattern_8_or
 activate pattern_8_or
 
-        
+
 wfrunner -> pattern_8_or : ""aoi""
-        
+
 wfrunner -> pattern_8_or : ""epsg""
-        
+
 wfrunner -> pattern_8_or : ""bands""
-        
+
 wfrunner -> pattern_8_or : ""item""
-        
+
 wfrunner -> pattern_8_or : ""produce_output""
-        
 
 
 
 
-        
-        
-        
+
+
+
+
 participant "step: step\nCommandLineTool: clt" as pattern_8_or__step
 activate pattern_8_or__step
 
-                
-                        
+
+
 pattern_8_or -> pattern_8_or__step : ""item"" (from ""item"")
-                        
-                
-                        
+
+
+
 pattern_8_or -> pattern_8_or__step : ""aoi"" (from ""aoi"")
-                        
-                
-                        
+
+
+
 pattern_8_or -> pattern_8_or__step : ""epsg"" (from ""epsg"")
-                        
-                
-                        
+
+
+
 pattern_8_or -> pattern_8_or__step : ""band"" (from ""bands"")
-                        
-                
-                        
+
+
+
 pattern_8_or -> pattern_8_or__step : ""produce_output"" (from ""produce_output"")
-                        
-                
+
+
 
 pattern_8_or__step -> pattern_8_or__step : Compute
 
-                
+
 pattern_8_or <-- pattern_8_or__step : ""stac-catalog""
-                
+
 
 deactivate pattern_8_or__step
-        
 
 
 
 
-        
-                
+
+
+
 wfrunner <-- pattern_8_or : ""water_bodies"" (from ""step/stac-catalog"")
-                
-        
+
+
 
 deactivate pattern_8_or
 

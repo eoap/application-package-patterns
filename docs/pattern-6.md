@@ -1,10 +1,10 @@
 # Water bodies detection based on NDWI and the otsu threshold v1.0.0
 
-NDVI mean from Landsat-8/9 acquisitions  
+NDVI mean from Landsat-8/9 acquisitions
 
 6. one input, no output
 
-The CWL includes: 
+The CWL includes:
 - one input parameter of type `Directory`
 - there are no output parameters of type `Directory`
 
@@ -92,7 +92,7 @@ User Manual can be found on [https://eoap.github.io/application-package-patterns
 
 ### OGC API - Processes
 
-When `pattern-6` [Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow) is exposed through [OGC API - Processes - Part 1: Core](https://docs.ogc.org/is/18-062r2/18-062r2.html), `inputs` and `outputs` fields below represent the interface of the [getProcessDescription](https://developer.ogc.org/api/processes/index.html#tag/ProcessDescription/operation/getProcessDescription) API. 
+When `pattern-6` [Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow) is exposed through [OGC API - Processes - Part 1: Core](https://docs.ogc.org/is/18-062r2/18-062r2.html), `inputs` and `outputs` fields below represent the interface of the [getProcessDescription](https://developer.ogc.org/api/processes/index.html#tag/ProcessDescription/operation/getProcessDescription) API.
 
 
 
@@ -167,4 +167,3 @@ runner pattern-6 \
 --aoi <AOI> \
 --epsg <EPSG>
 ```
-

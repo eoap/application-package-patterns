@@ -12,37 +12,37 @@ start
 group vegetation_indexes {
 
 split
-    
+
     :aoi; <<input>>
 split again
-    
+
     :epsg; <<input>>
 split again
-    
+
     :indexes; <<input>>
 split again
-    
+
     :item; <<input>>
 end split
-    
 
-    
+
+
 
 repeat
-        
-        
+
+
 :step: step
 CommandLineTool: clt;
-        
+
 repeat while (dotproduct step/index)
 
 
 
 split
-    
+
     :vegetation_indexes; <<output>>
 end split
-    
+
 
 }
 
