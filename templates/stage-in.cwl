@@ -28,7 +28,7 @@ s:author:
 s:softwareRequirements:
 - container runtime
 - cwl runner
-s:softwareVersion: 2.0.0
+s:softwareVersion: 2.0.1-rc.44.1
 class: CommandLineTool
 id: stage-in
 inputs:
@@ -49,7 +49,7 @@ outputs:
 baseCommand: stage-in
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:fd951bad323ff63cc2c0cd95b7b212c05831da0f746cea20d754c6c6fc19844d
+    dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:202225e9a7829d072dcb2d7177b2b68d0ab121ab2deb4ff9c8281d78d1379db9
   InlineJavascriptRequirement: {}
   NetworkAccess:
     networkAccess: true
@@ -71,6 +71,16 @@ requirements:
     coresMax: 1
     ramMax: 1024
 label: Stage-in STAC assets
-doc: Download the assets of a STAC item for local processing.
-s:codeRepository: https://github.com/eoap/mastering-app-package
-s:isBasedOn: https://raw.githubusercontent.com/eoap/mastering-app-package/2.0.0/cwl-cli/stage-in.cwl
+doc: Download the assets of a STAC item for local processing. The patterns adapter
+  stages the green, red and nir08 assets required by these lessons.
+s:codeRepository: https://github.com/eoap/mastering-app-package.git
+s:isBasedOn: ghcr.io/eoap/mastering-app-package/cwl/stage-in@sha256:106370fc68ff02caf81f6d64937af3fa960b7e2a3a66064205f64119e17f2161
+arguments:
+- --asset
+- green
+- --asset
+- red
+- --asset
+- nir08
+- --http-timeout
+- '300'

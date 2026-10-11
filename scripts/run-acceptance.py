@@ -100,11 +100,18 @@ for name, pattern, overrides in cases:
         print((target / 'execution.log').read_text()[-8000:], flush=True); raise SystemExit(run.returncode)
     output = json.loads((target / 'result.json').read_text())
     catalogs = list(uris(output))
-    if name in ('pattern-8-output-unset','pattern-9-all-unset'): assert not catalogs, output
+    if pattern == 'pattern-6':
+        import math
+        assert not catalogs and isinstance(output.get('mean'), (int, float)) and math.isfinite(output['mean']), output
+        assert -1 <= output['mean'] <= 1, output
+        (target / 'scientific-check.json').write_text(json.dumps({'mean': output['mean'], 'finite_normalized_index': True}))
+    elif name in ('pattern-8-output-unset','pattern-9-all-unset'): assert not catalogs, output
     else:
         assert catalogs, output
         checks = [check_catalog(uri, params['aoi']['bbox']) for uri in catalogs]
         (target / 'scientific-check.json').write_text(json.dumps(checks,indent=2))
+    record['acceptance_passed'] = True
+    (evidence / 'summary.json').write_text(json.dumps(summary,indent=2))
     print(f'PASSED {name}', flush=True)
 assert summary, 'No acceptance cases selected'
 print(f'All {len(summary)} cases passed; evidence: {evidence}', flush=True)

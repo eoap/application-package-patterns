@@ -178,7 +178,7 @@ symbols:
 
 ## Run the wrapped pattern
 
-The application uses local File/Directory ports. `eoap-cwlwrap` converts these to typed URI references and composes mastering 2.0.0 staging, using immutable GHCR container digests. Configure `PATTERNS_S3_ENDPOINT` for your S3 service.
+The application uses local File/Directory ports. `eoap-cwlwrap` converts these to typed URI references and composes the locked mastering staging artifacts, using immutable GHCR container digests. Configure `PATTERNS_S3_ENDPOINT` for your S3 service.
 
 ```bash
 python scripts/run-acceptance.py --case pattern-11

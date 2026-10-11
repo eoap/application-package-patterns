@@ -9,7 +9,7 @@ def render(path):
     assert document['cwlVersion'] == 'v1.2', path
     for field in ('s:softwareVersion', 's:codeRepository', 's:license', 's:author'):
         assert document.get(field), f'{path}: missing {field}'
-    assert document['s:codeRepository'] in ('https://github.com/eoap/application-package-patterns', 'https://github.com/eoap/mastering-app-package'), path
+    assert document['s:codeRepository'].removesuffix('.git') in ('https://github.com/eoap/application-package-patterns', 'https://github.com/eoap/mastering-app-package'), path
     def check(value):
         if isinstance(value, dict):
             assert '$include' not in value, f'{path}: external include'

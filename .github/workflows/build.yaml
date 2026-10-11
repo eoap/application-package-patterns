@@ -34,6 +34,10 @@ jobs:
           .venv/bin/python scripts/cwl-docs.py --validate --output acceptance-results/cwl-docs
           .venv/bin/python scripts/wrap-pattern.py --output acceptance-results/wrapped
           for cwl in acceptance-results/wrapped/*.cwl; do .venv/bin/cwltool --validate "$cwl"; done
+      - name: Test the processing runner
+        run: |
+          cd runner
+          ../.venv/bin/python -m nose2 -v
       - name: Start authenticated disposable S3
         run: |
           printf '%s' '{"identities":[{"name":"test","credentials":[{"accessKey":"test","secretKey":"test"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' > /tmp/s3.json

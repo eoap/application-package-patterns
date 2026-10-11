@@ -12,7 +12,8 @@ assert len(files) == 17
 for path in files:
     document = yaml.safe_load(path.read_text())
     assert document['cwlVersion'] == 'v1.2', path
-    assert document['s:softwareVersion'] == version, path
+    expected = lock['version'] if path.parent.name == 'templates' and path.stem in lock['sources'] else version
+    assert document['s:softwareVersion'] == expected, path
     def check(value):
         if isinstance(value, dict):
             if 'dockerPull' in value: assert re.search(r'@sha256:[a-f0-9]{64}$', value['dockerPull']), value['dockerPull']
