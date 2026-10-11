@@ -85,6 +85,21 @@ jobs:
           cp accepted/wrapped/*.cwl release-assets/wrapped/
           cd release-assets
           find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+      - name: Refuse to replace any existing CWL artifact
+        run: |
+          printf '%s' "$GH_TOKEN" | oras login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          for cwl in release-assets/pattern-*.cwl release-assets/test-*.cwl; do
+            name=$(basename "$cwl" .cwl)
+            if oras resolve "ghcr.io/eoap/application-package-patterns/cwl/$name:$VERSION" >/dev/null 2>&1; then
+              echo "Artifact already exists: $name:$VERSION"; exit 1
+            fi
+          done
+          for cwl in release-assets/wrapped/*.cwl; do
+            name=$(basename "$cwl" .cwl)
+            if oras resolve "ghcr.io/eoap/application-package-patterns/cwl/$name-wrapped:$VERSION" >/dev/null 2>&1; then
+              echo "Artifact already exists: $name-wrapped:$VERSION"; exit 1
+            fi
+          done
       - name: Publish standalone and wrapped CWL to GHCR
         run: |
           printf '%s' "$GH_TOKEN" | oras login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
