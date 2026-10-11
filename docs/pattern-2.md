@@ -1,168 +1,258 @@
-# Pattern 2 - Water bodies detection based on NDWI and the otsu threshold v1.0.0
+# pattern-2
 
-* two input parameters of type `Directory`
-* one output parameter of type `Directory`
+Repository: https://github.com/eoap/application-package-patterns
 
-This scenario typically takes as input one pre-event acquisition, one post-even acquisition, applies an algorithm and produces a result
+Version: 2.0.0
 
-Implementation: delineate water bodies using NDWI and Otsu automatic threshold taking as input two Landsat-8/9 acquisitions
+License: {'@type': 's:CreativeWork', 's:identifier': 'Apache-2.0', 's:name': 'Apache License 2.0', 's:url': 'https://spdx.org/licenses/Apache-2.0.html'}
 
+Author: Lois Lane (lois.lane@meoga.com)
 
-> This software is licensed under the terms of the [Apache License 2.0](https://spdx.org/licenses/Apache-2.0.html) license - SPDX short identifier: [Apache-2.0](https://spdx.org/licenses/Apache-2.0)
->
-> 2025-01-01 - 2026-08-28T13:25:42.647 Copyright [Make Earth Observation Great Again](mailto:info@meoga.com) - > [https://ror.org/9999cx000](https://ror.org/9999cx000)
+Author: Clark Kent (clark.kent@meoga.com)
 
-## Project Team
+## Water bodies detection based on NDWI and the otsu threshold
 
-### Authors
-
-| Name | Email | Organization | Role | Identifier |
-|------|-------|--------------|------|------------|
-| Lane, Lois | [lois.lane@meoga.com](mailto:lois.lane@meoga.com) | [Make Earth Observation Great Again](https://ror.org/9999cx000) | [Project administration](https://credit.niso.org/contributor-roles/project-administration/) | [https://orcid.org/0000-9999-0000-9999](https://orcid.org/0000-9999-0000-9999) |
-| Kent, Clark | [clark.kent@meoga.com](mailto:clark.kent@meoga.com) | [Make Earth Observation Great Again](https://ror.org/9999cx000) | [Supervision](https://credit.niso.org/contributor-roles/supervision/) | [https://orcid.org/9999-0000-9999-0000](https://orcid.org/9999-0000-9999-0000) |
-
-
-### Contributors
-
-| Name | Email | Organization | Role | Identifier |
-|------|-------|--------------|------|------------|
-| Luthor, Lex | [lex.luthor@meoga.com](mailto:lex.luthor@meoga.com) | [Make Earth Observation Great Again](https://ror.org/9999cx000) | [Software](https://credit.niso.org/contributor-roles/software/) | [None](None) |
-
-
-
-## User Manual
-
-User Manual can be found on [https://eoap.github.io/application-package-patterns/pattern-1/](https://eoap.github.io/application-package-patterns/pattern-1/).
-
-
-## Runtime environment
-
-### Supported Operating Systems
-
-- Linux
-- macOS
-- macOS Server
-
-### Requirements
-
-- [https://cwltool.readthedocs.io/en/latest/](https://cwltool.readthedocs.io/en/latest/)
-- [https://www.python.org/](https://www.python.org/)
-
-
----
-
-
-## pattern-2
-
-### CWL Class
-
-[Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow)
-
-
+Water bodies detection based on NDWI and otsu threshold applied to a pair of Landsat-8/9 acquisitions
 
 ### Inputs
 
-| Id | Type | Label | Doc |
-|----|------|-------|-----|
-| `aoi` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | area of interest | area of interest as a bounding box |
-| `epsg` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | EPSG code | EPSG code |
-| `bands` | `array` of [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | bands used for the NDWI | bands used for the NDWI |
-| `item_1` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Landsat-8/9 acquisition reference | Landsat-8/9 acquisition reference |
-| `item_2` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Landsat-8/9 acquisition reference | Landsat-8/9 acquisition reference |
-
-
-### Steps
-
-| Id | Runs | Label | Doc |
-|----|------|-------|-----|
-| [step](#clt) | `#clt` | Detect water bodies | Detect water bodies based on the NDWI and otsu threshold from Landsat- |
-
+| Name | Type | Description |
+| --- | --- | --- |
+| aoi | `#BBox` | area of interest as a bounding box |
+| epsg | `#CRS` | EPSG code |
+| bands | `#SpectralBand[]` | bands used for the NDWI |
+| item_1 | `Directory` | Landsat-8/9 acquisition reference |
+| item_2 | `Directory` | Landsat-8/9 acquisition reference |
 
 ### Outputs
 
-| Id | Type | Label | Doc |
-|----|------|-------|-----|
-| `water_bodies` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Water bodies detected | Water bodies detected based on the NDWI and otsu threshold |
+| Name | Type | Description |
+| --- | --- | --- |
+| water_bodies | `Directory` | Water bodies detected based on the NDWI and otsu threshold |
 
+### Type `https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI`
 
-### OGC API - Processes
+```yaml
+name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+type: record
+fields:
+- name: value
+  type: string
+```
 
-When `pattern-2` [Workflow](https://www.commonwl.org/v1.2/Workflow.html#Workflow) is exposed through [OGC API - Processes - Part 1: Core](https://docs.ogc.org/is/18-062r2/18-062r2.html), `inputs` and `outputs` fields below represent the interface of the [getProcessDescription](https://developer.ogc.org/api/processes/index.html#tag/ProcessDescription/operation/getProcessDescription) API.
+### Type `#BBox`
 
+```yaml
+name: '#BBox'
+type: record
+fields:
+- name: bbox
+  type:
+    type: array
+    items: double
+- name: crs
+  type: string
+```
 
+### Type `#SpectralBand`
 
-#### Inputs
+```yaml
+name: '#SpectralBand'
+type: enum
+symbols:
+- red
+- green
+- blue
+- nir
+- nir08
+- swir16
+- swir22
+```
 
-![pattern-2 OGC API Processes JSON Inputs schema](./pattern-2/ogc_processes_inputs.svg "pattern-2  diagram")
+### Type `#CRS`
 
-#### Outputs
+```yaml
+name: '#CRS'
+type: enum
+symbols:
+- '4326'
+- '3857'
+- '32610'
+- '32611'
+- native
+```
 
-![pattern-2 OGC API Processes JSON Outputs schema](./pattern-2/ogc_processes_outputs.svg "pattern-2  diagram")
+### Type `#VegetationIndex`
 
-
-### UML Diagrams
-
-
-#### Activity diagram
-
-Learn more about the [Activity diagram](https://en.wikipedia.org/wiki/Activity_diagram) below.
-
-![pattern-2 flow diagram](./pattern-2/activity.svg "pattern-2 Activity diagram")
-
-#### Component diagram
-
-Learn more about the [Component diagram](https://en.wikipedia.org/wiki/Component_diagram) below.
-
-![pattern-2 flow diagram](./pattern-2/component.svg "pattern-2 Component diagram")
-
-#### Class diagram
-
-Learn more about the [Class diagram](https://en.wikipedia.org/wiki/Class_diagram) below.
-
-![pattern-2 flow diagram](./pattern-2/class.svg "pattern-2 Class diagram")
-
-#### Sequence diagram
-
-Learn more about the [Sequence diagram](https://en.wikipedia.org/wiki/Sequence_diagram) below.
-
-![pattern-2 flow diagram](./pattern-2/sequence.svg "pattern-2 Sequence diagram")
-
-#### State diagram
-
-Learn more about the [State diagram](https://en.wikipedia.org/wiki/State_diagram) below.
-
-![pattern-2 flow diagram](./pattern-2/state.svg "pattern-2 State diagram")
-
-
-### Run in step
-
-`step`
-
-
+```yaml
+name: '#VegetationIndex'
+type: enum
+symbols:
+- ndvi
+- ndwi
+- none
+```
 
 ## clt
 
-### CWL Class
-
-[CommandLineTool](https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool)
+application-package-patterns: clt.
 
 ### Inputs
 
-| Id | Option | Type |
-|----|------|-------|
-| `item_1` | `--input-item-1` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
-| `item_2` | `--input-item-2` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) |
-| `aoi` | `--aoi` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
-| `epsg` | `--epsg` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
-| `band` | `--band` | One of:<ul><li>`array` of [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
+| Name | Type | Description |
+| --- | --- | --- |
+| item_1 | `Directory` | item 1. |
+| item_2 | `Directory` | item 2. |
+| aoi | `#BBox` | aoi. |
+| epsg | `#CRS` | epsg. |
+| band | `[{'type': 'array', 'items': '#SpectralBand', 'inputBinding': {'prefix': '--band'}}]` | band. |
 
-### Execution usage example:
+### Outputs
 
+| Name | Type | Description |
+| --- | --- | --- |
+| stac-catalog | `Directory` | stac catalog. |
+
+### Type `https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI`
+
+```yaml
+name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+type: record
+fields:
+- name: value
+  type: string
 ```
-runner pattern-2 \
---input-item-1 <ITEM_1> \
---input-item-2 <ITEM_2> \
---aoi <AOI> \
---epsg <EPSG> \
---band <BAND>
+
+### Type `#BBox`
+
+```yaml
+name: '#BBox'
+type: record
+fields:
+- name: bbox
+  type:
+    type: array
+    items: double
+- name: crs
+  type: string
 ```
+
+### Type `#SpectralBand`
+
+```yaml
+name: '#SpectralBand'
+type: enum
+symbols:
+- red
+- green
+- blue
+- nir
+- nir08
+- swir16
+- swir22
+```
+
+### Type `#CRS`
+
+```yaml
+name: '#CRS'
+type: enum
+symbols:
+- '4326'
+- '3857'
+- '32610'
+- '32611'
+- native
+```
+
+### Type `#VegetationIndex`
+
+```yaml
+name: '#VegetationIndex'
+type: enum
+symbols:
+- ndvi
+- ndwi
+- none
+```
+
+## Run the wrapped pattern
+
+The application uses local File/Directory ports. `eoap-cwlwrap` converts these to typed URI references and composes mastering 2.0.0 staging, using immutable GHCR container digests. Configure `PATTERNS_S3_ENDPOINT` for your S3 service.
+
+```bash
+python scripts/run-acceptance.py --case pattern-2
+```
+
+The typed application inputs are:
+
+```json
+{
+  "aoi": {
+    "bbox": [
+      -118.985,
+      38.432,
+      -118.183,
+      38.938
+    ],
+    "crs": "CRS84"
+  },
+  "epsg": "4326",
+  "bands": [
+    "green",
+    "nir08"
+  ],
+  "item_1": {
+    "value": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2/items/LC08_L2SP_042033_20231007_02_T1"
+  },
+  "item_2": {
+    "value": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2/items/LC09_L2SP_042033_20231015_02_T1"
+  }
+}
+```
+
+The acceptance runner adds S3 credentials, bucket and a unique publication prefix. It verifies returned STAC links and georeferenced raster assets against the actual area of interest.
+
+## Diagrams
+
+### Activity
+
+![Activity diagram](pattern-2/activity.svg)
+
+[PlantUML source](pattern-2/activity.puml)
+
+### Component
+
+![Component diagram](pattern-2/component.svg)
+
+[PlantUML source](pattern-2/component.puml)
+
+### Class
+
+![Class diagram](pattern-2/class.svg)
+
+[PlantUML source](pattern-2/class.puml)
+
+### Sequence
+
+![Sequence diagram](pattern-2/sequence.svg)
+
+[PlantUML source](pattern-2/sequence.puml)
+
+### State
+
+![State diagram](pattern-2/state.svg)
+
+[PlantUML source](pattern-2/state.puml)
+
+### Ogc Processes Inputs
+
+![Ogc_Processes_Inputs diagram](pattern-2/ogc_processes_inputs.svg)
+
+[PlantUML source](pattern-2/ogc_processes_inputs.puml)
+
+### Ogc Processes Outputs
+
+![Ogc_Processes_Outputs diagram](pattern-2/ogc_processes_outputs.svg)
+
+[PlantUML source](pattern-2/ogc_processes_outputs.puml)

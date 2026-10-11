@@ -16,3 +16,10 @@ boto3
 requests
 mkdocs-material
 mkdocs-mermaid2-plugin
+rio-stac
+planetary-computer
+scikit-image
+pyproj
+shapely
+loguru
+click

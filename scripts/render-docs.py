@@ -23,7 +23,7 @@ for n in range(1, 13):
     markdown += 'The acceptance runner adds S3 credentials, bucket and a unique publication prefix. It verifies returned STAC links and georeferenced raster assets against the actual area of interest.\n\n## Diagrams\n\n'
     for kind in DiagramType:
         stream = StringIO()
-        to_puml(cwl_document={p.id:p for p in processes}, diagram_type=kind, output_stream=stream)
+        to_puml(cwl_document={p.id:p for p in processes}, diagram_type=kind, output_stream=stream, workflow_id=name)
         text = stream.getvalue()
         if '@enduml' not in text: text += '\n@enduml\n'
         filename = kind.name.lower()
