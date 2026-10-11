@@ -124,3 +124,27 @@ The CWL includes:
 - output parameter of type `Directory[]`
 
 This scenario takes as input an array of acquisition, applies an algorithm to each of them. 
+## Typed CWL development
+
+The feature checkout uses CWL v1.2 with embedded URI, bounding box, CRS,
+spectral band and vegetation index definitions. Existing shared OGC and
+GeoJSON schemas remain explicit imports. Metadata and port documentation are
+validated by `python scripts/cwl-docs.py --validate --output /tmp/cwl-docs`.
+
+The lessons are Markdown pages backed by twelve executable CWL examples. `eoap-cwlwrap` composes each example with the mastering stage-in/out commands; wrapper-introduced URI definitions are embedded in the resulting standalone document. No CWL packing step is used.
+
+Install and validate the release environment:
+
+```bash
+uv venv --python 3.12 .venv
+uv pip sync --python .venv/bin/python --require-hashes requirements-notebooks.txt
+source .venv/bin/activate
+task test:contracts
+task wrap
+```
+
+Run all twelve patterns and four optional-input/output cases against real Landsat and DEM data using the `application-package-patterns` module in [dev-platform-eoap](https://github.com/eoap/dev-platform-eoap). Its `task labs` uses Calrissian on Kubernetes and the deployed SeaweedFS S3 endpoint. For a local Podman runner, configure `PATTERNS_S3_ENDPOINT`, prepare the bucket with `python scripts/prepare-s3.py`, then run `python scripts/run-acceptance.py --runner cwltool`.
+
+The acceptance runner verifies published STAC links, readable raster assets, coordinate reference systems and intersection with the requested area. Pattern 6 returns a scalar normalized-index mean; its acceptance check verifies a finite value within [-1, 1]. Evidence includes execution logs, outputs and scientific checks for each case.
+
+The staging provenance and immutable GHCR image references are recorded in `mastering-staging.lock.json`. Deployment uses GitHub resources and published containers; it requires no sibling host checkout.

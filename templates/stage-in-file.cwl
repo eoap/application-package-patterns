@@ -1,60 +1,69 @@
-cwlVersion: v1.0
-
+cwlVersion: v1.2
 class: CommandLineTool
 id: my-asthonishing-stage-in-file
-
 inputs:
   reference:
     type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-    doc: "An URL to stage" 
-    label: "Reference URL"
-  another_input:
-    type: string
-    doc: "An additional input for demonstration purposes"
-    label: "Another Input"
+    doc: An URL to stage
+    label: Reference URL
 outputs:
   staged:
     type: File
     outputBinding:
       glob: staged
-baseCommand: 
+    label: staged
+    doc: staged.
+baseCommand:
 - python
 - stage.py
 arguments:
 - $( inputs.reference.value )
-- $( inputs.another_input ) # This is an additional input to demonstrate the use of multiple inputs
 requirements:
   NetworkAccess:
     networkAccess: true
   SchemaDefRequirement:
     types:
-    - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
+    - type: record
+      name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+      doc: Represents a valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
+      fields:
+      - name: value
+        type: string
+        doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
   DockerRequirement:
-    dockerPull: ghcr.io/eoap/application-package-patterns/vegetation-indexes:0.1.1
+    dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:56623b24570fe8b28042cbe494c6da10cb4c758c28b303136d7dae1982b808f6
   InlineJavascriptRequirement: {}
   InitialWorkDirRequirement:
     listing:
-      - entryname: stage.py
-        entry: |-
-          import sys
-          import requests
-          import planetary_computer
+    - entryname: stage.py
+      entry: 'import asyncio
 
-          href = sys.argv[1]
+        import sys
 
-          signed_url = planetary_computer.sign(href)
-          output_path = "staged"
+        from stac_asset import Config, download_file
 
-          response = requests.get(signed_url, stream=True)
-          response.raise_for_status()  # Raise an error for bad status codes
 
-          with open(output_path, "wb") as f:
-              for chunk in response.iter_content(chunk_size=8192):
-                  f.write(chunk)
+        asyncio.run(download_file(sys.argv[1], "staged", config=Config(http_client_timeout=300,
+        http_max_attempts=3)))
 
-          print(f"Downloaded to {output_path}")
+        print("Downloaded to staged")
 
-          empty_arg = sys.argv[2]
-          
-          
-
+        '
+  EnvVarRequirement:
+    envDef:
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  ResourceRequirement:
+    coresMin: 1
+    ramMin: 1024
+$namespaces:
+  s: https://schema.org/
+s:softwareVersion: 2.0.0
+s:codeRepository: https://github.com/eoap/application-package-patterns
+s:license: https://spdx.org/licenses/MIT.html
+s:author:
+- class: s:Person
+  s:name: Fabrice Brito
+  s:email: fabrice.brito@terradue.com
+label: Stage in file
+doc: "Stage a real remote file using the mastering container\u2019s stac-asset transfer\
+  \ library and Planetary Computer signing."

@@ -1,0 +1,17 @@
+{
+  "version": "2.0.1",
+  "sources": {
+    "stage-in": {
+      "url": "ghcr.io/eoap/mastering-app-package/cwl/stage-in@sha256:b4f2e41e31d768fe0e1c70e0497c939e23c0833063b482d10763418142b7fb97",
+      "tag": "2.0.1",
+      "sha256": "4d5c9b7dc876bab8e04eabdd9b379fe037f26e26c504d9484ca4f970fe8b1f0e",
+      "image": "ghcr.io/eoap/mastering-app-package/stage-in@sha256:56623b24570fe8b28042cbe494c6da10cb4c758c28b303136d7dae1982b808f6"
+    },
+    "stage-out": {
+      "url": "ghcr.io/eoap/mastering-app-package/cwl/stage-out@sha256:6e4289924c86ff8639bd242fca7f99214839ef09bc1bd39ba7398689243dd3c9",
+      "tag": "2.0.1",
+      "sha256": "062130234d396ab0b0c5cd96f0e8659841214108ae6de709fe8d92af2b50481b",
+      "image": "ghcr.io/eoap/mastering-app-package/stage-out@sha256:3c3312d06227a0cbf01f0c45e1e60b87faf59949780573429c09a0c9db2b8ac1"
+    }
+  }
+}

@@ -1,91 +1,58 @@
 version: '3'
-
-includes:
-  remote: https://raw.githubusercontent.com/eoap/task-files/refs/tags/0.1.0/build-test/Taskfile.yaml
-  local: Taskfile-local.yaml
-  
 tasks:
-  build:
-  - task: remote:build
-
-  build-debug:
-    cmds: 
-    - defer: rm -f skaffold-auto.yaml
-    - task: remote:prepare-kaniko
-    - |
-      skaffold build -f skaffold-auto.yaml 
-
-  build-ttl:
-  - task: remote:build-ttl
-
-  prepare:
-  - task: remote:prepare-kaniko
-
+  wrap:
+    desc: Compose all twelve patterns using eoap-cwlwrap and published mastering staging
+    cmds:
+      - python scripts/wrap-pattern.py
+  cwl:docs:
+    cmds:
+      - python scripts/cwl-docs.py --validate --output /tmp/patterns-cwl-docs
   test:
-  - task: remote:test
-  
+    desc: Execute the twelve patterns and four optional-port cases using Calrissian and real EO data
+    cmds:
+      - python scripts/check-release.py
+      - python scripts/run-acceptance.py
+  test:contracts:
+    cmds:
+      - python scripts/check-release.py
+      - python scripts/cwl-docs.py --validate --output /tmp/patterns-cwl-docs
+      - cd runner && python -m nose2 -v
+  docs:
+    cmds:
+      - mkdocs build --strict
   pattern-1:
-  - task: local:pattern-1-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 0
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-1
   pattern-2:
-  - task: local:pattern-2-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 1
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-2
   pattern-3:
-  - task: local:pattern-3-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 2
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-3
   pattern-4:
-  - task: local:pattern-4-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 3
-
-  pattern-5:  
-  - task: local:pattern-5-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 4
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-4
+  pattern-5:
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-5
   pattern-6:
-  - task: local:pattern-6-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 5
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-6
   pattern-7:
-  - task: local:pattern-7-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 6
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-7
   pattern-8:
-  - task: local:pattern-8-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 7
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-8
   pattern-9:
-  - task: local:pattern-9-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 8
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-9
   pattern-10:
-  - task: local:pattern-10-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 9
-
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-10
   pattern-11:
-  - task: local:pattern-11-wrap
-  - task: remote:test-by-index
-    vars:
-      VAR: 10
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-11
+  pattern-12:
+    cmds:
+      - python scripts/run-acceptance.py --case pattern-12
