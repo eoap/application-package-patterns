@@ -100,6 +100,7 @@ for name, pattern, overrides in cases:
         print((target / 'execution.log').read_text()[-8000:], flush=True); raise SystemExit(run.returncode)
     output = json.loads((target / 'result.json').read_text())
     catalogs = list(uris(output))
+    assert len(catalogs) == len(set(catalogs)), ("Outputs must have distinct S3 catalogs", output)
     if pattern == 'pattern-6':
         import math
         assert not catalogs and isinstance(output.get('mean'), (int, float)) and math.isfinite(output['mean']), output

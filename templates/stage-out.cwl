@@ -65,6 +65,7 @@ outputs:
   s3_catalog_output:
     outputBinding:
       outputEval: '${ return {value: "s3://" + inputs.s3_bucket + "/" + inputs.sub_path
+        + "/" + inputs.stac_catalog.location.replace(/\/$/, "").split("/").slice(-2).join("-")
         + "/catalog.json"}; }'
     type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
     label: Uploaded STAC catalog
@@ -73,7 +74,8 @@ baseCommand: stage-out
 arguments:
 - $( inputs.stac_catalog.path )
 - $( inputs.s3_bucket )
-- $( inputs.sub_path )
+- $( inputs.sub_path + "/" + inputs.stac_catalog.location.replace(/\/$/, "").split("/").slice(-2).join("-")
+  )
 requirements:
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage-out@sha256:4e2c44b34f0d79ad380dca50913dc76c5be2448add86f992b872735581b6587a
@@ -101,6 +103,10 @@ requirements:
       - name: value
         type: string
         doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
+  WorkReuse:
+    enableReuse: false
+  LoadListingRequirement:
+    loadListing: deep_listing
 label: Stage-out STAC results
 s:codeRepository: https://github.com/eoap/mastering-app-package.git
 s:isBasedOn: ghcr.io/eoap/mastering-app-package/cwl/stage-out@sha256:18c9e45c705d9b5c3d3cf91fc258f2d39dc184a6996edbdd76bb21d2405aa73a
