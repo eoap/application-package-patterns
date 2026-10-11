@@ -36,12 +36,19 @@ requirements:
   InitialWorkDirRequirement:
     listing:
     - entryname: stage.py
-      entry: "import sys\nimport requests\nimport planetary_computer\n\nhref = sys.argv[1]\n\
-        \nsigned_url = planetary_computer.sign(href)\noutput_path = \"staged\"\n\n\
-        response = requests.get(signed_url, stream=True, timeout=60)\nresponse.raise_for_status()\
-        \  # Raise an error for bad status codes\n\nwith open(output_path, \"wb\"\
-        ) as f:\n    for chunk in response.iter_content(chunk_size=8192):\n      \
-        \  f.write(chunk)\n\nprint(f\"Downloaded to {output_path}\")\n\n"
+      entry: 'import asyncio
+
+        import sys
+
+        from stac_asset import Config, download_file
+
+
+        asyncio.run(download_file(sys.argv[1], "staged", config=Config(http_client_timeout=300,
+        http_max_attempts=3)))
+
+        print("Downloaded to staged")
+
+        '
   EnvVarRequirement:
     envDef:
       PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -58,4 +65,5 @@ s:author:
   s:name: Fabrice Brito
   s:email: fabrice.brito@terradue.com
 label: Stage in file
-doc: Stage in file for the STAC EOAP training module.
+doc: "Stage a real remote file using the mastering container\u2019s stac-asset transfer\
+  \ library and Planetary Computer signing."
