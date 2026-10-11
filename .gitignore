@@ -19,3 +19,6 @@ temp
 .venv
 site
 .params.yaml
+.cache/
+wrapped-cwl-workflow/
+acceptance-results/

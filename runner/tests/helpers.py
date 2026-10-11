@@ -17,7 +17,7 @@ from cwltool.executors import NoopJobExecutor
 from cwl_loader import dump_cwl
 from io import StringIO
 from click.testing import CliRunner
-from eoap_cwlwrap import wrap_locations
+import importlib.util
 from pathlib import Path
 
 
@@ -55,18 +55,10 @@ class TestCWL(unittest.TestCase):
         return self.validate_cwl_file(app_cwl_file)
 
     def _wrapped_cwl_validation(self):
-        main_workflow = wrap_locations(
-            directory_stage_in=f"{self.base_url}/templates/stage-in.cwl",
-            file_stage_in=f"{self.base_url}/templates/stage-in-file.cwl",
-            workflows=(
-                f"{self.base_url}/cwl-workflow/{self.entrypoint}.cwl"
-                f"#{self.entrypoint}"
-            ),
-            directory_stage_out=f"{self.base_url}/templates/stage-out.cwl",
-        )
-
-        output_path = Path(self.output)
-        with output_path.open("w") as f:
-            dump_cwl(main_workflow, f)
+        root = Path(__file__).resolve().parents[2]
+        spec = importlib.util.spec_from_file_location('pattern_wrap', root / 'scripts/wrap-pattern.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.compose(self.entrypoint, Path(self.output))
 
         self.assertEqual(self._cwl_validation(".wrapped.cwl"), 0)

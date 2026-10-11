@@ -1,29 +1,16 @@
 name: docs
 on:
   push:
-    branches:
-      - develop
-      - main
-    paths:
-      # Only rebuild website when docs have changed
-      - 'README.md'
-      - 'docs/**'
-      - 'mkdocs.y*ml'
-      - .github/**
-
+    branches: [main, develop]
+    paths: ['docs/**', 'mkdocs.yaml', 'requirements-notebooks.txt', '.github/workflows/docs.yaml']
+permissions:
+  contents: write
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout master
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.x
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - run: pip install mkdocs-material mkdocs-mermaid2-plugin mkdocs-jupyter cwltool ipykernel graphviz pillow cwl-loader eoap-cwlwrap plantuml cwl2puml
-      - run: sudo apt update && sudo apt install -y graphviz wget
-      - run: docker pull ghcr.io/eoap/mastering-app-package/stage:1.0.0
-      - run: docker pull ghcr.io/eoap/application-package-patterns/runner:0.2.0 
-      - run: mkdocs gh-deploy --force
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv venv --python 3.12 .venv
+      - run: uv pip sync --python .venv/bin/python --require-hashes requirements-notebooks.txt
+      - run: .venv/bin/mkdocs gh-deploy --force --strict

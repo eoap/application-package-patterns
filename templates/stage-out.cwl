@@ -1,56 +1,97 @@
-# Embedded URI schema derived from eoap/schemas (Copyright 2025 Terradue, Apache-2.0).
 cwlVersion: v1.2
+$namespaces:
+  s: https://schema.org/
+s:name: Stage-out STAC results
+s:description: Upload the results catalog and its assets to S3-compatible storage.
+s:dateCreated: '2022-09-01'
+s:license:
+  s:name: Creative Commons Attribution-ShareAlike 4.0 International
+  s:url: https://creativecommons.org/licenses/by-sa/4.0/
+  s:identifier: CC-BY-SA-4.0
+s:softwareHelp:
+  s:name: Mastering Earth Observation Application Packaging with CWL
+  s:url: https://eoap.github.io/mastering-app-package
+s:publisher:
+  s:name: EO Application Packaging
+  s:identifier: https://github.com/eoap
+s:author:
+- s:givenName: Jane
+  s:familyName: Doe
+  s:email: jane.doe@acme.earth
+  s:affiliation:
+    s:name: ACME
+- s:givenName: John
+  s:familyName: Doe
+  s:email: john.doe@acme.earth
+  s:affiliation:
+    s:name: ACME
+s:softwareRequirements:
+- container runtime
+- cwl runner
+s:softwareVersion: 2.0.0
 class: CommandLineTool
-id: my-super-stage-out
-doc: Stage-out the results to S3
+id: stage-out
+doc: Upload the results catalog and its assets to S3-compatible storage.
 inputs:
   s3_bucket:
     type: string
-    label: s3 bucket
-    doc: s3 bucket.
+    label: S3 bucket
+    doc: Name of the destination S3 bucket.
   sub_path:
     type: string
-    label: sub path
-    doc: sub path.
+    label: Object prefix
+    doc: Object key prefix under which results are uploaded.
   aws_access_key_id:
     type: string
-    label: aws access key id
-    doc: aws access key id.
+    label: S3 access key ID
+    doc: Access key ID used to authenticate to the S3-compatible service.
   aws_secret_access_key:
     type: string
-    label: aws secret access key
-    doc: aws secret access key.
+    label: S3 secret access key
+    doc: Secret access key used to authenticate to the S3-compatible service.
   region_name:
     type: string
-    label: region name
-    doc: region name.
+    label: S3 region
+    doc: Region name used for S3 requests.
   endpoint_url:
     type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-    label: endpoint url
-    doc: endpoint url.
+    label: S3 endpoint
+    doc: URL of the S3-compatible service endpoint.
   stac_catalog:
-    doc: The folder containing the STAC catalog to stage out
-    label: STAC Catalog folder
     type: Directory
+    label: Results STAC catalog
+    doc: Directory containing the results STAC catalog and its referenced raster assets.
 outputs:
   s3_catalog_output:
-    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
     outputBinding:
       outputEval: '${ return {value: "s3://" + inputs.s3_bucket + "/" + inputs.sub_path
         + "/catalog.json"}; }'
-    label: s3 catalog output
-    doc: s3 catalog output.
-stdout: catalog-uri.txt
-baseCommand:
-- python
-- stage.py
+    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+    label: Uploaded STAC catalog
+    doc: S3 URI of the uploaded results catalog.
+baseCommand: stage-out
 arguments:
 - $( inputs.stac_catalog.path )
 - $( inputs.s3_bucket )
 - $( inputs.sub_path )
 requirements:
+  DockerRequirement:
+    dockerPull: ghcr.io/eoap/mastering-app-package/stage-out@sha256:2974b42df1722ebf4d220c041e4345a94553b1bb81188b545fd58c70e93f490a
+  InlineJavascriptRequirement: {}
   NetworkAccess:
     networkAccess: true
+  EnvVarRequirement:
+    envDef:
+      aws_access_key_id: $( inputs.aws_access_key_id )
+      aws_secret_access_key: $( inputs.aws_secret_access_key )
+      aws_region_name: $( inputs.region_name )
+      aws_endpoint_url: $(inputs.endpoint_url.value)
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  ResourceRequirement:
+    coresMin: 1
+    ramMin: 1024
+    coresMax: 1
+    ramMax: 1024
   SchemaDefRequirement:
     types:
     - type: record
@@ -60,114 +101,6 @@ requirements:
       - name: value
         type: string
         doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
-  DockerRequirement:
-    dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
-  InlineJavascriptRequirement: {}
-  EnvVarRequirement:
-    envDef:
-      aws_access_key_id: $( inputs.aws_access_key_id )
-      aws_secret_access_key: $( inputs.aws_secret_access_key )
-      aws_region_name: $( inputs.region_name )
-      aws_endpoint_url: $( inputs.endpoint_url.value )
-  ResourceRequirement: {}
-  InitialWorkDirRequirement:
-    listing:
-    - entryname: stage.py
-      entry: |-
-        import os
-        import sys
-        import pystac
-        import botocore
-        import boto3
-        import shutil
-        from pystac.stac_io import DefaultStacIO, StacIO
-        from urllib.parse import urlparse
-
-        cat_url = sys.argv[1]
-        bucket = sys.argv[2]
-        subfolder = sys.argv[3]
-
-        aws_access_key_id = os.environ["aws_access_key_id"]
-        aws_secret_access_key = os.environ["aws_secret_access_key"]
-        region_name = os.environ["aws_region_name"]
-        endpoint_url = os.environ["aws_endpoint_url"]
-
-        shutil.copytree(cat_url, "/tmp/catalog")
-        cat = pystac.read_file(os.path.join("/tmp/catalog", "catalog.json"))
-
-        class CustomStacIO(DefaultStacIO):
-            """Custom STAC IO class that uses boto3 to read from S3."""
-
-            def __init__(self):
-                self.session = botocore.session.Session()
-                self.s3_client = self.session.create_client(
-                    service_name="s3",
-                    use_ssl=True,
-                    aws_access_key_id=aws_access_key_id,
-                    aws_secret_access_key=aws_secret_access_key,
-                    endpoint_url=endpoint_url,
-                    region_name=region_name,
-                )
-
-            def write_text(self, dest, txt, *args, **kwargs):
-                parsed = urlparse(dest)
-                if parsed.scheme == "s3":
-                    self.s3_client.put_object(
-                        Body=txt.encode("UTF-8"),
-                        Bucket=parsed.netloc,
-                        Key=parsed.path[1:],
-                        ContentType="application/geo+json",
-                    )
-                else:
-                    super().write_text(dest, txt, *args, **kwargs)
-
-
-        client = boto3.client(
-            "s3",
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-            endpoint_url=endpoint_url,
-            region_name=region_name,
-        )
-
-        StacIO.set_default(CustomStacIO)
-
-        for item in cat.get_items():
-            for key, asset in item.get_assets().items():
-                s3_path = os.path.normpath(
-                    os.path.join(os.path.join(subfolder, item.id, asset.href))
-                )
-                print(f"upload {asset.href} to s3://{bucket}/{s3_path}",file=sys.stderr)
-                client.upload_file(
-                    asset.get_absolute_href(),
-                    bucket,
-                    s3_path,
-                )
-                asset.href = f"s3://{bucket}/{s3_path}"
-                item.add_asset(key, asset)
-
-        cat.set_root(cat)
-        for item in cat.get_items():
-            item.set_root(cat)
-        cat.normalize_hrefs(f"s3://{bucket}/{subfolder}")
-
-        for item in cat.get_items():
-            # upload item to S3
-            print(f"upload {item.id} to s3://{bucket}/{subfolder}", file=sys.stderr)
-            pystac.write_file(item, item.get_self_href())
-
-        # upload catalog to S3
-        print(f"upload catalog.json to s3://{bucket}/{subfolder}", file=sys.stderr)
-        pystac.write_file(cat, cat.get_self_href())
-
-        print(f"s3://{bucket}/{subfolder}/catalog.json", end="", file=sys.stdout)
-$namespaces:
-  s: https://schema.org/
-s:softwareVersion: 0.0.1
-s:codeRepository: https://github.com/eoap/application-package-patterns
-s:license: https://spdx.org/licenses/MIT.html
-s:author:
-- class: s:Person
-  s:name: Fabrice Brito
-  s:email: fabrice.brito@terradue.com
-label: Stage out
+label: Stage-out STAC results
+s:codeRepository: https://github.com/eoap/mastering-app-package
+s:isBasedOn: https://raw.githubusercontent.com/eoap/mastering-app-package/2.0.0/cwl-cli/stage-out.cwl

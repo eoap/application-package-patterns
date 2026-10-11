@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "sources": {
+    "stage-in": {
+      "url": "https://raw.githubusercontent.com/eoap/mastering-app-package/2.0.0/cwl-cli/stage-in.cwl",
+      "sha256": "b1252adb9d8470dd2f2400cf64b1d32fcc841bf721c58f23ff20bf6c397f9fa4",
+      "image": "ghcr.io/eoap/mastering-app-package/stage-in@sha256:fd951bad323ff63cc2c0cd95b7b212c05831da0f746cea20d754c6c6fc19844d"
+    },
+    "stage-out": {
+      "url": "https://raw.githubusercontent.com/eoap/mastering-app-package/2.0.0/cwl-cli/stage-out.cwl",
+      "sha256": "231ca537057c95c60aec1b6b9e9bfab4d19e58466f2d23fd6351cd33b49a2f86",
+      "image": "ghcr.io/eoap/mastering-app-package/stage-out@sha256:2974b42df1722ebf4d220c041e4345a94553b1bb81188b545fd58c70e93f490a"
+    }
+  }
+}

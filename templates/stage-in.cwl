@@ -1,33 +1,61 @@
-# Embedded URI schema derived from eoap/schemas (Copyright 2025 Terradue, Apache-2.0).
 cwlVersion: v1.2
+$namespaces:
+  s: https://schema.org/
+s:name: Stage-in STAC assets
+s:description: Download the assets of a STAC item for local processing.
+s:dateCreated: '2022-09-01'
+s:license:
+  s:name: Creative Commons Attribution-ShareAlike 4.0 International
+  s:url: https://creativecommons.org/licenses/by-sa/4.0/
+  s:identifier: CC-BY-SA-4.0
+s:softwareHelp:
+  s:name: Mastering Earth Observation Application Packaging with CWL
+  s:url: https://eoap.github.io/mastering-app-package
+s:publisher:
+  s:name: EO Application Packaging
+  s:identifier: https://github.com/eoap
+s:author:
+- s:givenName: Jane
+  s:familyName: Doe
+  s:email: jane.doe@acme.earth
+  s:affiliation:
+    s:name: ACME
+- s:givenName: John
+  s:familyName: Doe
+  s:email: john.doe@acme.earth
+  s:affiliation:
+    s:name: ACME
+s:softwareRequirements:
+- container runtime
+- cwl runner
+s:softwareVersion: 2.0.0
 class: CommandLineTool
-id: my-asthonishing-stage-in-directory
+id: stage-in
 inputs:
   reference:
     type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-    doc: A STAC Item to stage
-    label: STAC Item URL
-  another_input:
-    type: string
-    default: ''
-    label: Additional example input
-    doc: Optional parameter used to illustrate wrapper parameter propagation.
+    label: STAC item reference
+    doc: URI of the STAC item whose assets are downloaded.
+    inputBinding:
+      prefix: --reference
+      valueFrom: $(self.value)
 outputs:
   staged:
     type: Directory
     outputBinding:
       glob: .
-    label: staged
-    doc: staged.
-baseCommand:
-- python
-- stage.py
-arguments:
-- $( inputs.reference.value )
-- $( inputs.another_input )
+    label: Staged acquisition
+    doc: Directory containing the staged STAC catalog, item, and downloaded assets.
+baseCommand: stage-in
 requirements:
+  DockerRequirement:
+    dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:fd951bad323ff63cc2c0cd95b7b212c05831da0f746cea20d754c6c6fc19844d
+  InlineJavascriptRequirement: {}
   NetworkAccess:
     networkAccess: true
+  EnvVarRequirement:
+    envDef:
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   SchemaDefRequirement:
     types:
     - type: record
@@ -37,39 +65,12 @@ requirements:
       - name: value
         type: string
         doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
-  DockerRequirement:
-    dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
-  InlineJavascriptRequirement: {}
-  InitialWorkDirRequirement:
-    listing:
-    - entryname: stage.py
-      entry: "import pystac\nimport stac_asset\nimport asyncio\nimport aiohttp\nfrom\
-        \ stac_asset.errors import DownloadError\nimport os\nimport sys\n\nconfig\
-        \ = stac_asset.Config(warn=False, http_client_timeout=180, http_max_attempts=3,\
-        \ fail_fast=False)\n\nasync def main(href: str):\n    \n    item = pystac.read_file(href)\n\
-        \    \n    os.makedirs(item.id, exist_ok=True)\n    cwd = os.getcwd()\n  \
-        \  \n    os.chdir(item.id)\n    source_item = item.clone()\n    for attempt\
-        \ in range(3):\n        try:\n            item = await stac_asset.download_item(item=source_item.clone(),\
-        \ directory=\".\", config=config)\n            break\n        except (aiohttp.ClientError,\
-        \ asyncio.TimeoutError, DownloadError) as error:\n            if isinstance(error,\
-        \ DownloadError) and not all(isinstance(child, (aiohttp.ClientError, asyncio.TimeoutError))\
-        \ for child in error.exceptions):\n                raise\n            if attempt\
-        \ == 2:\n                raise\n            print(f\"Incomplete remote transfer;\
-        \ retrying staging attempt {attempt + 2}/3\", file=sys.stderr)\n         \
-        \   await asyncio.sleep(2 ** (attempt + 1))\n    os.chdir(cwd)\n    \n   \
-        \ cat = pystac.Catalog(\n        id=\"catalog\",\n        description=f\"\
-        catalog with staged {item.id}\",\n        title=f\"catalog with staged {item.id}\"\
-        ,\n    )\n    cat.add_item(item)\n    \n    cat.normalize_hrefs(\"./\")\n\
-        \    cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)\n\n    return\
-        \ cat\n\nhref = sys.argv[1]\nempty_arg = sys.argv[2]\n\ncat = asyncio.run(main(href))"
-$namespaces:
-  s: https://schema.org/
-s:softwareVersion: 0.0.1
-s:codeRepository: https://github.com/eoap/application-package-patterns
-s:license: https://spdx.org/licenses/MIT.html
-s:author:
-- class: s:Person
-  s:name: Fabrice Brito
-  s:email: fabrice.brito@terradue.com
-label: Stage in
-doc: Stage in for the STAC EOAP training module.
+  ResourceRequirement:
+    coresMin: 1
+    ramMin: 1024
+    coresMax: 1
+    ramMax: 1024
+label: Stage-in STAC assets
+doc: Download the assets of a STAC item for local processing.
+s:codeRepository: https://github.com/eoap/mastering-app-package
+s:isBasedOn: https://raw.githubusercontent.com/eoap/mastering-app-package/2.0.0/cwl-cli/stage-in.cwl

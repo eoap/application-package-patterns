@@ -9,7 +9,7 @@ def render(path):
     assert document['cwlVersion'] == 'v1.2', path
     for field in ('s:softwareVersion', 's:codeRepository', 's:license', 's:author'):
         assert document.get(field), f'{path}: missing {field}'
-    assert document['s:codeRepository'] == 'https://github.com/eoap/application-package-patterns', path
+    assert document['s:codeRepository'] in ('https://github.com/eoap/application-package-patterns', 'https://github.com/eoap/mastering-app-package'), path
     def check(value):
         if isinstance(value, dict):
             assert '$include' not in value, f'{path}: external include'
@@ -21,9 +21,11 @@ def render(path):
     check(document)
     lines = [f'# {path.stem}', '', f"Repository: {document['s:codeRepository']}", '',
              f"Version: {document['s:softwareVersion']}", '', f"License: {document['s:license']}", '']
-    for author in document['s:author']:
-        assert author.get('s:name') and author.get('s:email'), f'{path}: incomplete author'
-        lines.extend([f"Author: {author['s:name']} ({author['s:email']})", ''])
+    for role in document['s:author']:
+        author = role.get('s:author', role)
+        name = author.get('s:name') or ' '.join(str(author.get(k, '')) for k in ('s:givenName', 's:familyName')).strip()
+        assert name and author.get('s:email'), f'{path}: incomplete author'
+        lines.extend([f"Author: {name} ({author['s:email']})", ''])
     for process in document.get('$graph', [document]):
         assert process.get('label') and process.get('doc'), f'{path}: missing process description'
         lines.extend([f"## {process['label']}", '', process['doc'], ''])

@@ -120,7 +120,7 @@ class WorkflowWrapper:
         return [main, *application, directory_stage_in, file_stage_in, directory_stage_out]
 
 
-def embed_wrapper_types(path):
+def embed_wrapper_types(path, application=None):
     """Embed the wrapper-introduced URI definition after dump_cwl serialization."""
     from copy import deepcopy
     from pathlib import Path
@@ -141,6 +141,7 @@ def embed_wrapper_types(path):
         return value
     target = Path(path)
     document = embed(yaml.safe_load(target.read_text()))
-    for key in ("$namespaces", "s:softwareVersion", "s:codeRepository", "s:license", "s:author"):
-        document[key] = deepcopy(template[key])
+    metadata = yaml.safe_load(Path(application).read_text()) if application else template
+    for key, value in metadata.items():
+        if key.startswith("s:") or key == "$namespaces": document[key] = deepcopy(value)
     target.write_text(yaml.safe_dump(document, sort_keys=False))

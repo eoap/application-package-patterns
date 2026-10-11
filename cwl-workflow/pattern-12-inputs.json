@@ -1,0 +1,27 @@
+{
+  "aoi": {
+    "bbox": [
+      -118.985,
+      38.432,
+      -118.183,
+      38.938
+    ],
+    "crs": "CRS84"
+  },
+  "item": {
+    "value": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2/items/LC08_L2SP_042033_20231007_02_T1"
+  },
+  "bands": [
+    "green",
+    "nir08"
+  ],
+  "cropped-collection": {
+    "value": "https://github.com/eoap/application-package-patterns/raw/7af45d5/collections/cropped_collection.json"
+  },
+  "ndwi-collection": {
+    "value": "https://github.com/eoap/application-package-patterns/raw/7af45d5/collections/ndi_collection.json"
+  },
+  "water-bodies-collection": {
+    "value": "https://github.com/eoap/application-package-patterns/raw/7af45d5/collections/water_bodies_collection.json"
+  }
+}

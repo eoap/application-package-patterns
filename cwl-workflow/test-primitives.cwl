@@ -1,8 +1,7 @@
-# Embedded URI schema derived from eoap/schemas (Copyright 2025 Terradue, Apache-2.0).
 cwlVersion: v1.2
 $namespaces:
   s: https://schema.org/
-s:softwareVersion: 1.0.0
+s:softwareVersion: 2.0.0
 $graph:
 - id: test-primitives
   class: Workflow
@@ -113,10 +112,12 @@ $graph:
       envDef:
         PATH: /app/envs/runner/bin:/usr/bin
     ResourceRequirement:
+      coresMin: 1
+      ramMin: 2048
       coresMax: 1
-      ramMax: 256
+      ramMax: 2048
     DockerRequirement:
-      dockerPull: ghcr.io/eoap/application-package-patterns/runner@sha256:db75818d12e3ea05b583ff53e32cd291fc3d40a62ae8cb53d51573c56813f1b6
+      dockerPull: ghcr.io/eoap/application-package-patterns/runner@sha256:e9650bd0a6c5fc25ee5e52fcfa5cad8e77bb75582ce3a628ee43dfd5f3155ab0
     SchemaDefRequirement:
       types:
       - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
@@ -230,8 +231,66 @@ $graph:
       label: echoed
       doc: echoed.
 s:codeRepository: https://github.com/eoap/application-package-patterns
-s:license: https://spdx.org/licenses/MIT.html
+s:license:
+  '@type': s:CreativeWork
+  s:identifier: Apache-2.0
 s:author:
-- class: s:Person
-  s:name: Fabrice Brito
-  s:email: fabrice.brito@terradue.com
+- '@type': s:Role
+  s:roleName: Project Manager
+  s:additionalType: http://purl.org/spar/datacite/ProjectManager
+  s:author:
+    '@type': s:Person
+    s:givenName: Lois
+    s:familyName: Lane
+    s:email: lois.lane@dailyplanet.com
+    s:identifier: https://orcid.org/0000-9999-0000-9999
+    s:affiliation:
+      '@type': s:Organization
+      s:name: Daily Planet
+      s:identifier: https://ror.org/0000cx000
+- '@type': s:Role
+  s:roleName: Researcher
+  s:additionalType: http://purl.org/spar/datacite/Researcher
+  s:author:
+    '@type': s:Person
+    s:givenName: Clark
+    s:familyName: Kent
+    s:email: clark.kent@dailyplanet.com
+    s:identifier: https://orcid.org/0000-9999-0000-9999
+    s:affiliation:
+      '@type': s:Organization
+      s:name: Daily Planet
+      s:identifier: https://ror.org/0000cx000
+s:name: Echo All CWL Primitive Types
+s:description: This workflow demonstrates usage of all CWL primitive types. It runs
+  the `echo-tool` with default values and captures the output in a file.
+s:dateCreated: '2025-01-01'
+s:keywords:
+- CWL
+- Workflow
+- Earth Observation
+s:operatingSystem:
+- Linux
+- macOS
+s:softwareRequirements:
+- https://cwltool.readthedocs.io/en/latest/
+- https://www.python.org/
+s:softwareHelp:
+- '@type': s:CreativeWork
+  s:name: User Manual
+  s:url: tps://eoap.github.io/application-package-patterns/
+s:publisher:
+  '@type': s:Organization
+  s:name: Make Earth Observation Great Again
+  s:email: info@meoga.com
+  s:identifier: https://ror.org/9999cx000
+s:contributor:
+- '@type': s:Person
+  s:givenName: Lex
+  s:familyName: Luthor
+  s:email: lex.luthor@luthorcorp.com
+  s:identifier: https://orcid.org/0000-9999-0000-9999
+  s:affiliation:
+    '@type': s:Organization
+    s:name: Luthor Corp
+    s:identifier: https://ror.org/0000cx000
