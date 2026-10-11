@@ -141,6 +141,63 @@ def embed_wrapper_types(path, application=None):
         return value
     target = Path(path)
     document = embed(yaml.safe_load(target.read_text()))
+    # Relocate embedded module type identifiers into this standalone document.
+    # DOM serialization preserves the original checkout URI in type names.
+    local_documents = set()
+    def collect(value):
+        if isinstance(value, dict):
+            name = value.get("name", "")
+            if isinstance(name, str) and name.startswith("file://") and "#" in name and value.get("type") in ("record", "enum"):
+                local_documents.add(name.split("#", 1)[0])
+            for child in value.values(): collect(child)
+        elif isinstance(value, list):
+            for child in value: collect(child)
+    collect(document)
+    def relocate(value):
+        if isinstance(value, str) and "#" in value and value.split("#", 1)[0] in local_documents:
+            return "#" + value.split("#", 1)[1]
+        if isinstance(value, dict):
+            # Anonymous array names introduce a separate URI scope for local types.
+            anonymous_array = value.get("type") == "array" and str(value.get("name", "")).startswith("_:")
+            return {key: relocate(child) for key, child in value.items() if not (anonymous_array and key == "name")}
+        if isinstance(value, list): return [relocate(child) for child in value]
+        return value
+    document = relocate(document)
+    # Keep the approved shared schema imports in their original form.
+    # Serializing them as remote-named inline types confuses schema loaders.
+    approved = ("https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml",
+                "https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml")
+    def restore_imports(value):
+        if isinstance(value, dict):
+            if "types" in value and isinstance(value["types"], list):
+                result = []
+                imported = set()
+                for schema in value["types"]:
+                    name = schema.get("name", "") if isinstance(schema, dict) else ""
+                    url = next((url for url in approved if name.startswith(url + "#")), None)
+                    if url:
+                        if url not in imported: result.append({"$import": url}); imported.add(url)
+                    else: result.append(schema)
+                value["types"] = result
+            for child in value.values(): restore_imports(child)
+        elif isinstance(value, list):
+            for child in value: restore_imports(child)
+    restore_imports(document)
+    def unique_inputs(value):
+        if isinstance(value, dict):
+            inputs = value.get("inputs")
+            if isinstance(inputs, list):
+                unique = {}
+                for port in inputs:
+                    identifier = port["id"]
+                    if identifier in unique and unique[identifier] != port:
+                        raise ValueError(f"Conflicting duplicate input: {identifier}")
+                    unique[identifier] = port
+                value["inputs"] = list(unique.values())
+            for child in value.values(): unique_inputs(child)
+        elif isinstance(value, list):
+            for child in value: unique_inputs(child)
+    unique_inputs(document)
     metadata = yaml.safe_load(Path(application).read_text()) if application else template
     for key, value in metadata.items():
         if key.startswith("s:") or key == "$namespaces": document[key] = deepcopy(value)

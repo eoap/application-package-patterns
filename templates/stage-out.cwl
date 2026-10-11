@@ -28,7 +28,7 @@ s:author:
 s:softwareRequirements:
 - container runtime
 - cwl runner
-s:softwareVersion: 2.0.1-rc.44.1
+s:softwareVersion: 2.0.1
 class: CommandLineTool
 id: stage-out
 doc: Upload the results catalog and its assets to S3-compatible storage.
@@ -78,7 +78,7 @@ arguments:
   )
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/eoap/mastering-app-package/stage-out@sha256:4e2c44b34f0d79ad380dca50913dc76c5be2448add86f992b872735581b6587a
+    dockerPull: ghcr.io/eoap/mastering-app-package/stage-out@sha256:3c3312d06227a0cbf01f0c45e1e60b87faf59949780573429c09a0c9db2b8ac1
   InlineJavascriptRequirement: {}
   NetworkAccess:
     networkAccess: true
@@ -109,4 +109,4 @@ requirements:
     loadListing: deep_listing
 label: Stage-out STAC results
 s:codeRepository: https://github.com/eoap/mastering-app-package.git
-s:isBasedOn: ghcr.io/eoap/mastering-app-package/cwl/stage-out@sha256:18c9e45c705d9b5c3d3cf91fc258f2d39dc184a6996edbdd76bb21d2405aa73a
+s:isBasedOn: ghcr.io/eoap/mastering-app-package/cwl/stage-out@sha256:6e4289924c86ff8639bd242fca7f99214839ef09bc1bd39ba7398689243dd3c9

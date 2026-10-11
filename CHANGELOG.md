@@ -1,13 +1,14 @@
 # Changelog
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-10-11
 
 - Use CWL v1.2 and embedded typed input contracts throughout the twelve patterns.
 - Compose standalone wrapped applications with eoap-cwlwrap and mastering GHCR staging artifacts.
 - Hash-lock the Python 3.12 environment and pin processing images by digest.
 - Validate all twelve real-data workflows and four optional-input/output cases, including S3 STAC and raster checks.
 - Replace stale practice notebooks with executable examples, typed lesson documentation and diagrams.
-- Add acceptance and guarded publication CI for original and wrapped CWL artifacts.
+- Add acceptance and guarded publication CI for original and wrapped CWL artifacts, including actual transpiler-mate metadata and immutable pull-back verification.
+- Remove host checkout paths and anonymous array scopes from wrapped module types and duplicate S3 input declarations from multi-output wrappers.
 
 ## [0.3.1] - 2026-10-08
 

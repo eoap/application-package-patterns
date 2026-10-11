@@ -34,6 +34,12 @@ jobs:
           .venv/bin/python scripts/cwl-docs.py --validate --output acceptance-results/cwl-docs
           .venv/bin/python scripts/wrap-pattern.py --output acceptance-results/wrapped
           for cwl in acceptance-results/wrapped/*.cwl; do .venv/bin/cwltool --validate "$cwl"; done
+      - name: Validate portable release OCI metadata
+        run: |
+          uv venv --python 3.12 .oci-venv
+          uv pip sync --python .oci-venv/bin/python --require-hashes requirements-oci.txt
+          source .oci-venv/bin/activate
+          python scripts/prepare-oci.py --source-dir cwl-workflow --wrapped-dir acceptance-results/wrapped --output acceptance-results/annotations --revision "$GITHUB_SHA" --version "$(jq -er .version codemeta.json)"
       - name: Test the processing runner
         run: |
           cd runner
@@ -73,16 +79,20 @@ jobs:
           name: acceptance-${{ github.sha }}
           path: accepted
       - uses: oras-project/setup-oras@v1
+      - uses: astral-sh/setup-uv@v6
       - name: Prepare all unchanged validated assets before publication
         run: |
           version=$(jq -er .version codemeta.json)
           echo "VERSION=$version" >> "$GITHUB_ENV"
           if gh release view "$version" >/dev/null 2>&1; then echo 'Version already published'; exit 1; fi
           mkdir release-assets
-          cp cwl-workflow/*.cwl cwl-workflow/*-inputs.json requirements-notebooks.txt mastering-staging.lock.json release-assets/
+          cp cwl-workflow/*.cwl cwl-workflow/*-inputs.json requirements-notebooks.txt requirements-oci.txt mastering-staging.lock.json release-assets/
           cp -r templates release-assets/
           mkdir release-assets/wrapped
           cp accepted/wrapped/*.cwl release-assets/wrapped/
+          cp -r accepted/annotations release-assets/
+          uv venv --python 3.12 .oci-venv
+          uv pip sync --python .oci-venv/bin/python --require-hashes requirements-oci.txt
           cd release-assets
           find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
       - name: Refuse to replace any existing CWL artifact
@@ -100,18 +110,31 @@ jobs:
               echo "Artifact already exists: $name-wrapped:$VERSION"; exit 1
             fi
           done
-      - name: Publish standalone and wrapped CWL to GHCR
+      - name: Publish and verify standalone and wrapped CWL on GHCR
         run: |
           printf '%s' "$GH_TOKEN" | oras login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
-          for cwl in release-assets/pattern-*.cwl release-assets/test-*.cwl; do
+          : > release-assets/oci-artifacts.txt
+          for cwl in release-assets/pattern-*.cwl release-assets/test-*.cwl release-assets/wrapped/*.cwl; do
             name=$(basename "$cwl" .cwl)
-            oras push "ghcr.io/eoap/application-package-patterns/cwl/$name:$VERSION" --artifact-type application/cwl "$cwl:application/cwl"
-          done
-          for cwl in release-assets/wrapped/*.cwl; do
-            name=$(basename "$cwl" .cwl)
-            oras push "ghcr.io/eoap/application-package-patterns/cwl/$name-wrapped:$VERSION" --artifact-type application/cwl "$cwl:application/cwl"
+            if [[ "$cwl" == */wrapped/* ]]; then name="$name-wrapped"; fi
+            file=$(basename "$cwl")
+            annotations="$GITHUB_WORKSPACE/release-assets/annotations/$name.annotations.json"
+            target="ghcr.io/eoap/application-package-patterns/cwl/$name:$VERSION"
+            (cd "$(dirname "$cwl")" && oras push "$target" --artifact-type application/cwl --annotation-file "$annotations" "$file:application/cwl")
+            digest=$(oras resolve "$target")
+            [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+            reference="ghcr.io/eoap/application-package-patterns/cwl/$name@$digest"
+            oras manifest fetch "$reference" > /tmp/patterns-manifest.json
+            jq -e --slurpfile expected "$annotations" '.annotations as $actual | $expected[0]."$manifest" | to_entries | all(.[]; $actual[.key] == .value)' /tmp/patterns-manifest.json
+            mkdir -p "/tmp/verified/$name"
+            oras pull "$reference" -o "/tmp/verified/$name"
+            cmp "$cwl" "/tmp/verified/$name/$file"
+            entrypoint=$(jq -er '."$manifest"."org.cwl.entrypoint"' "$annotations")
+            .oci-venv/bin/cwltool --validate "/tmp/verified/$name/$entrypoint"
+            printf '%s\n' "$reference" >> release-assets/oci-artifacts.txt
           done
       - name: Publish stable GitHub release
         run: |
+          (cd release-assets && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           tar -czf application-package-patterns.$VERSION.tar.gz -C release-assets .
           gh release create "$VERSION" application-package-patterns.$VERSION.tar.gz --target "$GITHUB_SHA" --title "Application Package Patterns $VERSION" --notes-file RELEASE_NOTES.md

@@ -31,7 +31,7 @@ requirements:
         type: string
         doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
   DockerRequirement:
-    dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:202225e9a7829d072dcb2d7177b2b68d0ab121ab2deb4ff9c8281d78d1379db9
+    dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:56623b24570fe8b28042cbe494c6da10cb4c758c28b303136d7dae1982b808f6
   InlineJavascriptRequirement: {}
   InitialWorkDirRequirement:
     listing:
