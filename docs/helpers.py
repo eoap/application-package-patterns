@@ -32,7 +32,11 @@ class WorkflowViewer:
 
     @staticmethod
     def from_file(cwl_file, entrypoint):
-        workflow = load_cwl_from_location(path=cwl_file)
+        from pathlib import Path
+        import yaml
+        from patterns.graph import load_document
+        source = yaml.safe_load(Path(cwl_file).read_text())
+        workflow = load_document(Path(cwl_file))
         return WorkflowViewer(cwl_file, workflow, entrypoint)
 
     @staticmethod
@@ -106,9 +110,10 @@ class WorkflowWrapper:
     def wrap(self):
         from pathlib import Path
         templates = Path(__file__).resolve().parents[1] / "templates"
-        directory_stage_in = load_cwl_from_location(path=str(templates / "stage-in.cwl"))
-        file_stage_in = load_cwl_from_location(path=str(templates / "stage-in-file.cwl"))
-        directory_stage_out = load_cwl_from_location(path=str(templates / "stage-out.cwl"))
+        from patterns.graph import load_document
+        directory_stage_in = load_document(templates / "stage-in.cwl")
+        file_stage_in = load_document(templates / "stage-in-file.cwl")
+        directory_stage_out = load_document(templates / "stage-out.cwl")
         workflow = search_process(process_id=self.entrypoint, process=self.workflow)
         main = wrap(
             workflow=workflow,
@@ -121,26 +126,12 @@ class WorkflowWrapper:
 
 
 def embed_wrapper_types(path, application=None):
-    """Embed the wrapper-introduced URI definition after dump_cwl serialization."""
+    """Restore published schema imports and embed only course-owned types."""
     from copy import deepcopy
     from pathlib import Path
     import yaml
-    template = yaml.safe_load((Path(__file__).resolve().parents[1] / "templates/stage-out.cwl").read_text())
-    schemas = template["requirements"]["SchemaDefRequirement"]["types"]
-    def embed(value):
-        if isinstance(value, dict):
-            if value.get("$import") == "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml":
-                return deepcopy(schemas)
-            return {key: embed(child) for key, child in value.items()}
-        if isinstance(value, list):
-            result = []
-            for child in value:
-                entry = embed(child)
-                result.extend(entry) if isinstance(entry, list) else result.append(entry)
-            return result
-        return value
     target = Path(path)
-    document = embed(yaml.safe_load(target.read_text()))
+    document = yaml.safe_load(target.read_text())
     # Relocate embedded module type identifiers into this standalone document.
     # DOM serialization preserves the original checkout URI in type names.
     local_documents = set()
@@ -163,10 +154,20 @@ def embed_wrapper_types(path, application=None):
         if isinstance(value, list): return [relocate(child) for child in value]
         return value
     document = relocate(document)
+    from patterns.graph import SCHEMA_ALIASES
+    def restore_shared_names(value):
+        if isinstance(value, str):
+            for namespace, alias in SCHEMA_ALIASES.items():
+                if value.startswith(alias): return namespace + value[len(alias):]
+        elif isinstance(value, dict): return {key: restore_shared_names(child) for key, child in value.items()}
+        elif isinstance(value, list): return [restore_shared_names(child) for child in value]
+        return value
+    document = restore_shared_names(document)
     # Keep the approved shared schema imports in their original form.
     # Serializing them as remote-named inline types confuses schema loaders.
     approved = ("https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml",
-                "https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml")
+                "https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml",
+                "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml")
     def restore_imports(value):
         if isinstance(value, dict):
             if "types" in value and isinstance(value["types"], list):

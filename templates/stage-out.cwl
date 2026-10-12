@@ -96,13 +96,7 @@ requirements:
     ramMax: 1024
   SchemaDefRequirement:
     types:
-    - type: record
-      name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-      doc: Represents a valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
-      fields:
-      - name: value
-        type: string
-        doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
+    - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
   WorkReuse:
     enableReuse: false
   LoadListingRequirement:

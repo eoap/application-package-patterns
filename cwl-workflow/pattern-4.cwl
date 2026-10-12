@@ -19,11 +19,7 @@ $graph:
     InlineJavascriptRequirement: {}
     SchemaDefRequirement:
       types:
-      - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-        type: record
-        fields:
-        - name: value
-          type: string
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       - name: '#BBox'
         type: record
         fields:
@@ -115,11 +111,7 @@ $graph:
       ramMax: 2048
     SchemaDefRequirement:
       types:
-      - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-        type: record
-        fields:
-        - name: value
-          type: string
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       - name: '#BBox'
         type: record
         fields:

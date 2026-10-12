@@ -12,11 +12,7 @@ $graph:
     InlineJavascriptRequirement: {}
     SchemaDefRequirement:
       types:
-      - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-        type: record
-        fields:
-        - name: value
-          type: string
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       - name: '#BBox'
         type: record
         fields:
@@ -120,11 +116,7 @@ $graph:
       dockerPull: ghcr.io/eoap/application-package-patterns/runner@sha256:e9650bd0a6c5fc25ee5e52fcfa5cad8e77bb75582ce3a628ee43dfd5f3155ab0
     SchemaDefRequirement:
       types:
-      - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-        type: record
-        fields:
-        - name: value
-          type: string
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       - name: '#BBox'
         type: record
         fields:
