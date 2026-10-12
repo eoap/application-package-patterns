@@ -33,17 +33,17 @@ test = ["bootstrap", "pytest -q {args}"]
 template = "dev"
 skip-install = false
 pre-install-commands = ["uv pip install --require-hashes -r requirements/development.txt"]
-post-install-commands = ["uv pip install --no-deps --no-build-isolation -e ."]
+post-install-commands = ["uv pip install --no-deps --no-build-isolation -e . -e .."]
 
 [tool.hatch.envs.dev]
 skip-install = true
 installer = "uv"
-post-install-commands = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
+post-install-commands = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e . -e .."]
 template = "dev"
 python = "3.12"
 
 [tool.hatch.envs.dev.scripts]
-bootstrap = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
+bootstrap = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e . -e .."]
 check = ["bootstrap", "format-check", "lint-check", "typecheck", "security"]
 format-check = "ruff format --check src"
 lint-check = "ruff check src"
