@@ -28,7 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t patterns-runner:accepted runner
-      - run: >-
-          docker run --rm patterns-runner:accepted sh -c
-          'test "$(id -u)" = 2000 && runner --help &&
-          python -c "import importlib.util; assert importlib.util.find_spec(\"pip\") is None"'
+      - run: |
+          docker run --rm patterns-runner:accepted runner --help
+          docker run --rm patterns-runner:accepted python -c 'import importlib.util, os; assert os.getuid() == os.getgid() == 2000; assert importlib.util.find_spec("pip") is None'
