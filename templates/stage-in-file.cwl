@@ -23,13 +23,7 @@ requirements:
     networkAccess: true
   SchemaDefRequirement:
     types:
-    - type: record
-      name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-      doc: Represents a valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
-      fields:
-      - name: value
-        type: string
-        doc: A valid [URI](https://datatracker.ietf.org/doc/html/rfc3986).
+    - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage-in@sha256:56623b24570fe8b28042cbe494c6da10cb4c758c28b303136d7dae1982b808f6
   InlineJavascriptRequirement: {}

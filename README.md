@@ -148,3 +148,20 @@ Run all twelve patterns and four optional-input/output cases against real Landsa
 The acceptance runner verifies published STAC links, readable raster assets, coordinate reference systems and intersection with the requested area. Pattern 6 returns a scalar normalized-index mean; its acceptance check verifies a finite value within [-1, 1]. Evidence includes execution logs, outputs and scientific checks for each case.
 
 The staging provenance and immutable GHCR image references are recorded in `mastering-staging.lock.json`. Deployment uses GitHub resources and published containers; it requires no sibling host checkout.
+
+## Locked processing model preparation
+
+The course, runner and legacy staging helper use Python 3.12, Hatchling wheels
+and hash-locked Hatch environments. Run `hatch run dev:check` and
+`hatch run test:test` in each package. The runner uses a two-stage Rocky Linux
+10.1 image, installs its accepted lock and wheel, and runs as UID/GID 2000.
+
+The course environment installs its runner editable after the lock. The legacy
+`stage-in` SDK helper has its own environment because its S3 client dependencies
+conflict with the course environment; wrapped workflows continue to use the
+published Mastering stage-in/out artifacts.
+
+Signed vegetation-index outputs remain float32; binary zero is valid land and
+is not nodata. Synthetic unit fixtures check these properties; release
+acceptance must still run all sixteen real EO cases with the new runner image.
+A successful package/image build alone is not release readiness.

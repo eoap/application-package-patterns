@@ -22,3 +22,10 @@ site
 .cache/
 wrapped-cwl-workflow/
 acceptance-results/
+
+.hatch/
+dist/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/

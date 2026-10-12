@@ -22,6 +22,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--runner', choices=['calrissian', 'cwltool'], default='calrissian')
 parser.add_argument('--output', type=Path, default=Path('/calrissian/patterns'))
 parser.add_argument('--case')
+parser.add_argument('--processing-image', help='Override only this course runner for candidate acceptance')
 parser.add_argument('--endpoint', default=os.environ.get('PATTERNS_S3_ENDPOINT', 'http://eoap-application-package-patterns-s3-seaweedfs-all-in-one:8333'))
 parser.add_argument('--bucket', default=os.environ.get('PATTERNS_S3_BUCKET', 'results'))
 args = parser.parse_args()
@@ -87,6 +88,9 @@ for name, pattern, overrides in cases:
     params.update(overrides)
     params.update({'s3_bucket':args.bucket, 'sub_path':f'acceptance/{stamp}/{name}', 'aws_access_key_id':os.environ.get('AWS_ACCESS_KEY_ID','test'), 'aws_secret_access_key':os.environ.get('AWS_SECRET_ACCESS_KEY','test'), 'region_name':'us-east-1', 'endpoint_url':{'value':args.endpoint}})
     workflow = wrapping.compose(pattern, target / 'wrapped.cwl')
+    if args.processing_image:
+        from patterns.release import select_processing_image
+        select_processing_image(workflow, args.processing_image)
     job = target / 'params.json'; job.write_text(json.dumps(params))
     command = ['/opt/calrissian-venv/bin/calrissian','--max-ram','16G','--max-cores','8','--pod-serviceaccount','calrissian-sa','--tmpdir-prefix',str(target / 'tmp') + '/', '--outdir',str(target / 'results'),'--usage-report',str(target / 'usage.json'),'--tool-logs-basepath',str(target / 'logs')]
     if args.runner == 'cwltool': command = ['cwltool','--podman','--outdir',str(target / 'results')]

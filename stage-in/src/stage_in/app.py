@@ -1,66 +1,52 @@
+"""Download a STAC Item using the public staging SDK and a scoped HTTP client."""
+
+import asyncio
+from pathlib import Path
+
+import aiohttp
+import click
 import pystac
 import stac_asset
-import asyncio
-import os
-import click
-from stac_asset import http_client
-import aiohttp
-import aiohttp
-from stac_asset import http_client
-
-import aiohttp
-from functools import wraps
-
-_original_init = aiohttp.TCPConnector.__init__
+from stac_asset.http_client import HttpClient
 
 
-@wraps(_original_init)
-def _patched_init(self, *args, **kwargs):
-    kwargs["force_close"] = True
-    _original_init(self, *args, **kwargs)
-
-
-aiohttp.TCPConnector.__init__ = _patched_init
-
-config = stac_asset.Config(warn=True)
-
-
-async def main(href: str, output_dir: str):
+async def main(href: str, output_dir: str) -> pystac.Catalog:
     item = pystac.read_file(href)
-
-    target_dir = os.path.join(output_dir, item.id)
-    os.makedirs(target_dir, exist_ok=True)
-
-    cwd = os.getcwd()
-    os.chdir(target_dir)
-
-    item = await stac_asset.download_item(item=item, directory=".", config=config)
-
-    os.chdir(cwd)
-
-    cat = pystac.Catalog(
+    if not isinstance(item, pystac.Item):
+        raise ValueError("Stage-in input must be a STAC Item")
+    target = Path(output_dir).resolve() / item.id
+    target.mkdir(parents=True, exist_ok=True)
+    config = stac_asset.Config(http_client_timeout=60, http_max_attempts=3)
+    connector = aiohttp.TCPConnector(force_close=True)
+    async with aiohttp.ClientSession(
+        connector=connector, timeout=aiohttp.ClientTimeout(total=60)
+    ) as session:
+        staged = await stac_asset.download_item(
+            item=item,
+            directory=target,
+            config=config,
+            clients=[HttpClient(session, assert_content_type=False)],
+            max_concurrent_downloads=8,
+            stream=True,
+        )
+    catalog = pystac.Catalog(
         id="catalog",
-        description=f"Catalog with staged {item.id}",
-        title=f"Catalog with staged {item.id}",
+        description=f"Catalog with staged {staged.id}",
+        title=f"Catalog with staged {staged.id}",
     )
-    cat.add_item(item)
-
-    cat.normalize_hrefs(target_dir)
-    cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
-
-    return cat
+    catalog.add_item(staged)
+    catalog.normalize_hrefs(str(target))
+    catalog.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+    return catalog
 
 
 @click.command()
 @click.argument("href")
 @click.option(
-    "--output-dir",
-    default=".",
-    show_default=True,
-    help="Directory where the catalog will be saved",
+    "--output-dir", default=".", show_default=True, help="Directory where the catalog will be saved"
 )
-def cli(href, output_dir):
-    """Download STAC item and stage into a self-contained STAC catalog."""
+def cli(href: str, output_dir: str) -> None:
+    """Download a STAC Item and stage a self-contained catalog."""
     asyncio.run(main(href, output_dir))
 
 

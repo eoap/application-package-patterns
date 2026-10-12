@@ -1,4 +1,8 @@
 import click
+
+from runner.crop import crop_cli
+from runner.ndi import ndi_cli
+from runner.otsu import otsu_cli
 from runner.pattern_1 import pattern_1
 from runner.pattern_2 import pattern_2
 from runner.pattern_3 import pattern_3
@@ -10,13 +14,10 @@ from runner.pattern_8 import pattern_8
 from runner.pattern_9 import pattern_9
 from runner.pattern_10 import pattern_10
 from runner.pattern_11 import pattern_11
-from runner.crop import crop_cli
-from runner.ndi import ndi_cli
-from runner.otsu import otsu_cli
 
 
 @click.group()
-def app_group():
+def app_group() -> None:
     pass
 
 

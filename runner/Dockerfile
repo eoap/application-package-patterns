@@ -1,61 +1,35 @@
-# Stage 1: Build stage
-FROM rockylinux:9.3-minimal AS build
-
-# Install necessary build tools
-RUN microdnf install -y curl tar
-
-# Download the hatch tar.gz file from GitHub
-RUN curl -L https://github.com/pypa/hatch/releases/latest/download/hatch-x86_64-unknown-linux-gnu.tar.gz -o /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz
-
-# Extract the hatch binary
-RUN tar -xzf /tmp/hatch-x86_64-unknown-linux-gnu.tar.gz -C /tmp/
-
-# Stage 2: Final stage
-FROM rockylinux:9.3-minimal
-
-# Install runtime dependencies
-RUN microdnf install -y --nodocs nodejs && \
+FROM docker.io/rockylinux/rockylinux:10.1-minimal@sha256:cfa2812ec7151c2be393cfe46e50cf59426373d12f03f4ffbdd56becb8195a65 AS builder
+RUN microdnf -y update && \
+    microdnf -y install curl tar git python3 python3-pip python3-setuptools gcc gcc-c++ make sqlite-devel zlib-devel glibc-devel libstdc++-devel && \
     microdnf clean all
+RUN test "$(uname -m)" = x86_64 && \
+    curl -fsSL https://github.com/pypa/hatch/releases/download/hatch-v1.14.0/hatch-x86_64-unknown-linux-gnu.tar.gz -o /tmp/hatch.tar.gz && \
+    echo "33af9b6f72cf11db6bc96070901cb9d32adbe316534bbf41d345cdd0d84b3459  /tmp/hatch.tar.gz" | sha256sum -c - && \
+    tar -xzf /tmp/hatch.tar.gz -C /tmp && \
+    install -m 0755 /tmp/hatch /usr/local/bin/hatch && \
+    rm -rf /tmp/hatch*
+WORKDIR /src
+COPY . /src
+RUN rm -rf dist && hatch build -t wheel
 
-# Set up a default user and home directory
+FROM docker.io/rockylinux/rockylinux:10.1-minimal@sha256:cfa2812ec7151c2be393cfe46e50cf59426373d12f03f4ffbdd56becb8195a65 AS runtime
+RUN microdnf -y update && \
+    microdnf -y install python3 python3-pip git jq libstdc++ sqlite-libs zlib libgomp expat && \
+    microdnf clean all
 ENV HOME=/home/neo
-
-# Create a user with UID 1001, group root, and a home directory
-RUN useradd -u 1001 -r -g 0 -m -d ${HOME} -s /sbin/nologin \
-        -c "Default User" neo && \
-    mkdir -p /app && \
-    mkdir -p /prod && \
-    chown -R 1001:0 /app && \
-    chmod g+rwx ${HOME} /app
-
-# Copy the hatch binary from the build stage
-COPY --from=build /tmp/hatch /usr/bin/hatch
-
-# Ensure the hatch binary is executable
-RUN chmod +x /usr/bin/hatch
-
-RUN microdnf install -y expat && microdnf clean all
-
-# Switch to the non-root user
+RUN /usr/sbin/groupadd -g 2000 neo && \
+    /usr/sbin/useradd -u 2000 -g 2000 -m -d ${HOME} -s /sbin/nologin neo && \
+    mkdir -p /app /work && chown -R 2000:2000 /app /work ${HOME}
 USER neo
-
-# Copy the application files into the /app directory
-COPY --chown=1001:0 . /app
 WORKDIR /app
-
-# Set up virtual environment paths
-ENV VIRTUAL_ENV=/app/envs/runner
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-ENV XDG_DATA_HOME=/app/.hatch/share
-ENV XDG_CACHE_HOME=/app/.hatch/cache
-ENV XDG_CONFIG_HOME=/app/.hatch/config
-
-# Prune any existing environments and create a new production environment
-RUN hatch env prune && \
-    hatch env create prod && \
-    #rm -fr /app/.git /app/.pytest_cache && \
-    rm -fr ~/.local && \
-    runner --help
-
-WORKDIR /app
-
+ENV VIRTUAL_ENV=/app/venv
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}:/usr/bin"
+RUN python3 -c 'import sys; assert sys.version_info[:2] == (3, 12)' && python3 -m venv /app/venv
+COPY --chown=2000:2000 requirements/runtime.txt /app/requirements.txt
+RUN pip install --no-cache-dir --require-hashes -r /app/requirements.txt
+COPY --from=builder --chown=2000:2000 /src/dist/*.whl /app/dist/
+RUN pip install --no-cache-dir --no-deps /app/dist/*.whl && \
+    pip check && python -m pip uninstall --yes pip && runner --help && \
+    rm -rf /app/requirements.txt /app/dist
+ENTRYPOINT []
+CMD ["runner", "--help"]

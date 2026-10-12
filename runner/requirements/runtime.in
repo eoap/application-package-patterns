@@ -1,0 +1,10 @@
+rasterio
+click
+pystac
+loguru
+pyproj
+shapely
+scikit-image
+rio_stac
+planetary-computer
+requests

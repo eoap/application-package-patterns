@@ -14,11 +14,7 @@ $graph:
       types:
       - $import: https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml
       - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
-      - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-        type: record
-        fields:
-        - name: value
-          type: string
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       - name: '#BBox'
         type: record
         fields:
@@ -52,11 +48,6 @@ $graph:
         - ndvi
         - ndwi
         - none
-      - type: record
-        name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime
-        fields:
-        - name: value
-          type: string
   inputs:
   - id: bbox
     type: https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#BBox
@@ -102,9 +93,6 @@ $graph:
   id: clt
   requirements:
     InlineJavascriptRequirement: {}
-    EnvVarRequirement:
-      envDef:
-        PATH: $PATH:/app/envs/runner/bin:/usr/bin
     ResourceRequirement:
       coresMin: 1
       ramMin: 2048
@@ -116,11 +104,7 @@ $graph:
       types:
       - $import: https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml
       - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
-      - name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
-        type: record
-        fields:
-        - name: value
-          type: string
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       - name: '#BBox'
         type: record
         fields:
@@ -154,11 +138,6 @@ $graph:
         - ndvi
         - ndwi
         - none
-      - type: record
-        name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime
-        fields:
-        - name: value
-          type: string
   baseCommand:
   - echo
   arguments:

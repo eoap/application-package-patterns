@@ -1,11 +1,13 @@
 import os
-import click
-import rasterio
-import pystac
 import shutil
+
+import click
+import pystac
+import rasterio
 import rio_stac
 from loguru import logger
-from runner.functions import normalized_difference, get_item
+
+from runner.functions import get_collection, get_item, normalized_difference
 
 
 @click.command(
@@ -31,21 +33,19 @@ from runner.functions import normalized_difference, get_item
     help="STAC collection",
     required=False,
 )
-def ndi_cli(item_1, item_2, ls9_item, collection_url):
+def ndi_cli(item_1: str, item_2: str, ls9_item: str, collection_url: str | None) -> None:
 
-    collection: pystac.Collection = (
-        pystac.read_file(collection_url) if collection_url else None
-    )
+    collection = get_collection(collection_url)
 
     # read STAC Catalog
-    item_1: pystac.Item = get_item(item_1)
-    item_2: pystac.Item = get_item(item_2)
+    item_1_stac = get_item(item_1)
+    item_2_stac = get_item(item_2)
 
-    ls9_item: pystac.Item = get_item(ls9_item)
+    ls9_item_stac = get_item(ls9_item)
 
     # get assets
-    asset_1: pystac.Asset = item_1.assets.get("data")
-    asset_2: pystac.Asset = item_2.assets.get("data")
+    asset_1: pystac.Asset = item_1_stac.assets["data"]
+    asset_2: pystac.Asset = item_2_stac.assets["data"]
 
     # read data
     with rasterio.open(asset_1.get_absolute_href()) as src1:
@@ -76,18 +76,16 @@ def ndi_cli(item_1, item_2, ls9_item, collection_url):
         dst_dataset.write(ndi_data, indexes=1)
 
     logger.info("Creating a STAC Catalog")
-    cat = pystac.Catalog(
-        id="catalog", description=f"Normalized difference from {ls9_item.id}"
-    )
+    cat = pystac.Catalog(id="catalog", description=f"Normalized difference from {ls9_item_stac.id}")
 
-    output_item_id = f"ndi-{ls9_item.id}".lower()
+    output_item_id = f"ndi-{ls9_item_stac.id}".lower()
 
     os.makedirs(output_item_id, exist_ok=True)
     shutil.copy(ndi, output_item_id)
 
     out_item = rio_stac.stac.create_stac_item(
         source=ndi,
-        input_datetime=ls9_item.datetime,
+        input_datetime=ls9_item_stac.datetime,
         id=output_item_id,
         asset_roles=["data", "visual"],
         asset_href=os.path.basename(ndi),
@@ -114,8 +112,6 @@ def ndi_cli(item_1, item_2, ls9_item, collection_url):
     os.remove(ndi)
     cat.add_items([out_item])
 
-    cat.normalize_and_save(
-        root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED
-    )
+    cat.normalize_and_save(root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED)
 
     logger.info("Done!")

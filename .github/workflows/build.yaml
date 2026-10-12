@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: Publish the accepted stable 2.0.0 from main
+        description: Publish the accepted version from main
         type: boolean
         default: false
 permissions:
@@ -26,7 +26,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y podman graphviz
           uv venv --python 3.12 .venv
-          uv pip sync --python .venv/bin/python --require-hashes requirements-notebooks.txt
+          uv pip sync --python .venv/bin/python --require-hashes requirements/development.txt
+          uv pip install --python .venv/bin/python --no-deps --no-build-isolation -e . -e runner
           uv pip check --python .venv/bin/python
       - name: Validate release contracts and wrapper API
         run: |
@@ -42,8 +43,13 @@ jobs:
           python scripts/prepare-oci.py --source-dir cwl-workflow --wrapped-dir acceptance-results/wrapped --output acceptance-results/annotations --revision "$GITHUB_SHA" --version "$(jq -er .version codemeta.json)"
       - name: Test the processing runner
         run: |
-          cd runner
-          ../.venv/bin/python -m nose2 -v
+          .venv/bin/python -m pytest -q
+      - name: Build the exact candidate processing runtime
+        run: |
+          mkdir -p acceptance-results/runtime
+          docker build -t ghcr.io/eoap/application-package-patterns/runner:acceptance runner
+          docker save -o acceptance-results/runtime/runner.tar ghcr.io/eoap/application-package-patterns/runner:acceptance
+          podman load -i acceptance-results/runtime/runner.tar
       - name: Start authenticated disposable S3
         run: |
           printf '%s' '{"identities":[{"name":"test","credentials":[{"accessKey":"test","secretKey":"test"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' > /tmp/s3.json
@@ -54,7 +60,7 @@ jobs:
       - name: Execute all sixteen real-data wrapped cases and verify S3
         run: |
           source .venv/bin/activate
-          python scripts/run-acceptance.py --runner cwltool --output "$GITHUB_WORKSPACE/acceptance-results/workflows"
+          python scripts/run-acceptance.py --processing-image ghcr.io/eoap/application-package-patterns/runner:acceptance --runner cwltool --output "$GITHUB_WORKSPACE/acceptance-results/workflows"
       - name: Build documentation strictly
         run: .venv/bin/mkdocs build --strict --site-dir acceptance-results/site
       - uses: actions/upload-artifact@v4
@@ -87,12 +93,15 @@ jobs:
           if gh release view "$version" >/dev/null 2>&1; then echo 'Version already published'; exit 1; fi
           mkdir release-assets
           cp cwl-workflow/*.cwl cwl-workflow/*-inputs.json requirements-notebooks.txt requirements-oci.txt mastering-staging.lock.json release-assets/
-          cp -r templates release-assets/
+          cp -r templates requirements release-assets/
           mkdir release-assets/wrapped
           cp accepted/wrapped/*.cwl release-assets/wrapped/
           cp -r accepted/annotations release-assets/
           uv venv --python 3.12 .oci-venv
           uv pip sync --python .oci-venv/bin/python --require-hashes requirements-oci.txt
+          uv venv --python 3.12 .venv
+          uv pip sync --python .venv/bin/python --require-hashes requirements/development.txt
+          uv pip install --python .venv/bin/python --no-deps --no-build-isolation -e . -e runner
           cd release-assets
           find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
       - name: Refuse to replace any existing CWL artifact
@@ -110,6 +119,22 @@ jobs:
               echo "Artifact already exists: $name-wrapped:$VERSION"; exit 1
             fi
           done
+      - name: Publish the exact accepted processing archive
+        run: |
+          image="ghcr.io/eoap/application-package-patterns/runner:$VERSION"
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          printf '%s' "$GH_TOKEN" | oras login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          if oras resolve "$image" >/dev/null 2>&1; then echo "Image tag already published"; exit 1; fi
+          docker load -i accepted/runtime/runner.tar
+          docker tag ghcr.io/eoap/application-package-patterns/runner:acceptance "$image"
+          docker push "$image"
+          digest=$(oras resolve "$image")
+          [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          reference="ghcr.io/eoap/application-package-patterns/runner@$digest"
+          .venv/bin/python -m patterns.release --image "$reference" --directory release-assets
+          printf '%s\n' "$reference" > release-assets/processing-image.txt
+          .venv/bin/python scripts/cwl-docs.py --source release-assets --validate --output accepted/published-cwl-docs
+          .oci-venv/bin/python scripts/prepare-oci.py --source-dir release-assets --wrapped-dir release-assets/wrapped --output release-assets/annotations --revision "$GITHUB_SHA" --version "$VERSION"
       - name: Publish and verify standalone and wrapped CWL on GHCR
         run: |
           printf '%s' "$GH_TOKEN" | oras login ghcr.io --username "$GITHUB_ACTOR" --password-stdin

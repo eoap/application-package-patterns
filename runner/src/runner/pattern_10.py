@@ -7,13 +7,16 @@
 # This scenario takes as input an array of acquisition, applies an algorithm to each of them.
 
 import os
+import shutil
+
 import click
+import numpy as np
 import pystac
 import rasterio
-from loguru import logger
-import shutil
 import rio_stac
-from runner.functions import aoi2box, crop, get_asset, normalized_difference, get_item
+from loguru import logger
+
+from runner.functions import aoi2box, crop, get_asset, get_item, normalized_difference
 
 
 @click.command(
@@ -45,7 +48,7 @@ from runner.functions import aoi2box, crop, get_asset, normalized_difference, ge
     help="Vegetation index to compute",
     required=True,
 )
-def pattern_10(item_url, aoi, epsg, vegetation_index):
+def pattern_10(item_url: str, aoi: str, epsg: str, vegetation_index: str) -> None:
 
     item = get_item(item_url)
 
@@ -55,12 +58,12 @@ def pattern_10(item_url, aoi, epsg, vegetation_index):
 
     for band in ["red", "green", "nir08"]:
         asset = get_asset(item, band)
-        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         if not asset:
             msg = f"Common band name {band} not found in the assets"
             logger.error(msg)
             raise ValueError(msg)
+        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         bbox = aoi2box(aoi)
 
@@ -84,7 +87,8 @@ def pattern_10(item_url, aoi, epsg, vegetation_index):
 
     out_meta.update(
         {
-            "dtype": "uint8",
+            "dtype": "float32",
+            "nodata": np.nan,
             "driver": "COG",
             "tiled": True,
             "compress": "lzw",
@@ -114,9 +118,7 @@ def pattern_10(item_url, aoi, epsg, vegetation_index):
 
     cat.add_items([out_item])
 
-    cat.normalize_and_save(
-        root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED
-    )
+    cat.normalize_and_save(root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED)
     shutil.copy(f"{name}.tif", os.path.join(name, f"{name}.tif"))
     os.remove(f"{name}.tif")
 
