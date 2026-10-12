@@ -1,0 +1,34 @@
+name: Locked processing model
+on:
+  pull_request:
+  push:
+    branches: ["feature/**", main]
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [".", runner, stage-in]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+      - run: uv tool install hatch==1.18.1
+      - run: hatch run dev:check
+      - run: hatch run test:test
+  runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t patterns-runner:accepted runner
+      - run: >-
+          docker run --rm patterns-runner:accepted sh -c
+          'test "$(id -u)" = 2000 && runner --help &&
+          python -c "import importlib.util; assert importlib.util.find_spec(\"pip\") is None"'

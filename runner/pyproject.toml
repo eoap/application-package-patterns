@@ -1,53 +1,84 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
 name = "runner"
 dynamic = ["version"]
-description = ''
+description = "Scientific application package pattern processing"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12,<3.13"
 license = "MIT"
 keywords = []
 authors = [
   { name = "Fabrice Brito", email = "fabrice.brito@terradue.com" },
 ]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
-]
+classifiers = ["Development Status :: 4 - Beta", "Programming Language :: Python", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: Implementation :: CPython", "Programming Language :: Python :: Implementation :: PyPy"]
 
 
-dependencies = [
-  "rasterio",
-  "click",
-  "pystac",
-  "loguru",
-  "pyproj",
-  "shapely",
-  "scikit-image",
-  "pystac",
-  "rio_stac",
-  "planetary-computer",
-  "requests",
-]
+dependencies = ["rasterio", "click", "pystac", "loguru", "pyproj", "shapely", "scikit-image", "rio_stac", "planetary-computer", "requests"]
 
 [project.urls]
-Documentation = "https://github.com/eoap/application-package-patterns#readme"
-Issues = "https://github.com/eoap/application-package-patterns/issues"
+Documentation = "https://eoap.github.io/application-package-patterns/"
 Source = "https://github.com/eoap/application-package-patterns"
+Issues = "https://github.com/eoap/application-package-patterns/issues"
 
-[tool.hatch.envs.prod]
-path = "/app/envs/runner"
+[tool.hatch.envs.test]
+template = "dev"
 
+[tool.hatch.envs.test.scripts]
+test = ["bootstrap", "pytest -q {args}"]
+
+[tool.hatch.envs.default]
+template = "dev"
+skip-install = false
+pre-install-commands = ["uv pip install --require-hashes -r requirements/development.txt"]
+post-install-commands = ["uv pip install --no-deps --no-build-isolation -e ."]
+
+[tool.hatch.envs.dev]
+skip-install = true
+installer = "uv"
+post-install-commands = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
+template = "dev"
+python = "3.12"
+
+[tool.hatch.envs.dev.scripts]
+bootstrap = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
+check = ["bootstrap", "format-check", "lint-check", "typecheck", "security"]
+format-check = "ruff format --check src"
+lint-check = "ruff check src"
+typecheck = "mypy src"
+security = "bandit -r src -ll"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/runner"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/README.md", "/pyproject.toml", "/Dockerfile", "/requirements", "/typing", "/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "C4", "SIM", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+ignore_missing_imports = true
+strict = true
+mypy_path = "typing"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "tests_cli.py"]
+addopts = "--import-mode=importlib"
+pythonpath = ["."]
 [project.scripts]
 runner = "runner.app:app_group"
 
@@ -61,26 +92,4 @@ extra-dependencies = [
 ]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/runner tests}"
-
-[tool.coverage.run]
-source_pkgs = ["runner", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/runner/__about__.py",
-]
-
-[tool.coverage.paths]
-runner = ["src/runner", "*/runner/src/runner"]
-tests = ["tests", "*/runner/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
-
-
-
 

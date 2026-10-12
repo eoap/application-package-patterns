@@ -1,0 +1,6 @@
+stac-asset
+boto3>=1.35,<2
+pystac
+loguru
+click
+pyyaml

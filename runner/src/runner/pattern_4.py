@@ -9,13 +9,15 @@
 # Implementation: process the NDVI and NDWI taking as input a Landsat-9 acquisition. The output include two STAC Catalogs, each with a single STAC Item
 
 import os
+import shutil
+
 import click
 import pystac
 import rasterio
-from loguru import logger
-import shutil
 import rio_stac
-from runner.functions import aoi2box, crop, get_asset, normalized_difference, get_item
+from loguru import logger
+
+from runner.functions import aoi2box, crop, get_asset, get_item, normalized_difference
 
 
 @click.command(
@@ -40,7 +42,7 @@ from runner.functions import aoi2box, crop, get_asset, normalized_difference, ge
     help="EPSG code",
     required=True,
 )
-def pattern_4(item_url, aoi, epsg):
+def pattern_4(item_url: str, aoi: str, epsg: str) -> None:
 
     item = get_item(item_url)
 
@@ -50,12 +52,12 @@ def pattern_4(item_url, aoi, epsg):
 
     for band in ["red", "green", "nir08"]:
         asset = get_asset(item, band)
-        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         if not asset:
             msg = f"Common band name {band} not found in the assets"
             logger.error(msg)
             raise ValueError(msg)
+        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         bbox = aoi2box(aoi)
 
@@ -69,6 +71,7 @@ def pattern_4(item_url, aoi, epsg):
     out_meta.update(
         {
             "dtype": "uint8",
+            "nodata": None,
             "driver": "COG",
             "tiled": True,
             "compress": "lzw",
@@ -78,7 +81,6 @@ def pattern_4(item_url, aoi, epsg):
     )
 
     for name, output in [("ndvi", ndvi), ("ndwi", ndwi)]:
-
         with rasterio.open(f"{name}.tif", "w", **out_meta) as dst_dataset:
             logger.info(f"Write output {name}.tif")
             dst_dataset.write(output, indexes=1)

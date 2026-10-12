@@ -1,12 +1,14 @@
 # crop CLI
 import os
+import shutil
+
 import click
-from runner.functions import crop, get_item, get_asset, aoi2box
 import pystac
 import rasterio
-from loguru import logger
-import shutil
 import rio_stac
+from loguru import logger
+
+from runner.functions import aoi2box, crop, get_asset, get_collection, get_item
 
 
 @click.command(
@@ -43,23 +45,21 @@ import rio_stac
     help="STAC collection",
     required=False,
 )
-def crop_cli(item_url, aoi, band, epsg, collection_url):
+def crop_cli(item_url: str, aoi: str, band: str, epsg: str, collection_url: str | None) -> None:
 
-    collection: pystac.Collection = (
-        pystac.read_file(collection_url) if collection_url else None
-    )
+    collection = get_collection(collection_url)
 
     item = get_item(item_url)
 
     logger.info(f"Read {item.id} from {item.get_self_href()}")
 
     asset = get_asset(item, band)
-    logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
     if not asset:
         msg = f"Common band name {band} not found in the assets"
         logger.error(msg)
         raise ValueError(msg)
+    logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
     bbox = aoi2box(aoi)
 
@@ -108,8 +108,6 @@ def crop_cli(item_url, aoi, band, epsg, collection_url):
     os.remove(cropped)
     cat.add_items([out_item])
 
-    cat.normalize_and_save(
-        root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED
-    )
+    cat.normalize_and_save(root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED)
 
     logger.info("Done!")

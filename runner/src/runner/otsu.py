@@ -1,11 +1,13 @@
 import os
+import shutil
+
 import click
 import pystac
 import rasterio
-from loguru import logger
-import shutil
 import rio_stac
-from runner.functions import threshold, get_item
+from loguru import logger
+
+from runner.functions import get_collection, get_item, threshold
 
 
 @click.command(
@@ -24,21 +26,19 @@ from runner.functions import threshold, get_item
     help="STAC collection",
     required=False,
 )
-def otsu_cli(item_ndi, ls9_item, collection_url):
+def otsu_cli(item_ndi: str, ls9_item: str, collection_url: str | None) -> None:
     """
     Detects water bodies using the Otsu thresholding method on the NDI.
     """
 
-    collection: pystac.Collection = (
-        pystac.read_file(collection_url) if collection_url else None
-    )
+    collection = get_collection(collection_url)
 
     # read STAC Catalog
-    item_ndi: pystac.Item = get_item(item_ndi)
-    ls9_item: pystac.Item = get_item(ls9_item)
+    item_ndi_stac = get_item(item_ndi)
+    ls9_item_stac = get_item(ls9_item)
 
     # get assets
-    asset_ndi: pystac.Asset = item_ndi.assets.get("data")
+    asset_ndi: pystac.Asset = item_ndi_stac.assets["data"]
 
     if not asset_ndi:
         msg = "NDI asset not found in the item"
@@ -58,6 +58,7 @@ def otsu_cli(item_ndi, ls9_item, collection_url):
     out_meta.update(
         {
             "dtype": "uint8",
+            "nodata": None,
             "driver": "GTiff",
             "compress": "lzw",
             "tiled": True,
@@ -70,11 +71,9 @@ def otsu_cli(item_ndi, ls9_item, collection_url):
     logger.info(f"Otsu output written to {otsu}")
 
     logger.info("Creating a STAC Catalog")
-    cat = pystac.Catalog(
-        id="catalog", description=f"Detected water bodies from {ls9_item.id}"
-    )
+    cat = pystac.Catalog(id="catalog", description=f"Detected water bodies from {ls9_item_stac.id}")
 
-    output_item_id = f"water-body-{ls9_item.id}".lower()
+    output_item_id = f"water-body-{ls9_item_stac.id}".lower()
 
     os.makedirs(output_item_id, exist_ok=True)
     shutil.copy(otsu, output_item_id)
@@ -82,7 +81,7 @@ def otsu_cli(item_ndi, ls9_item, collection_url):
     # Create a STAC Item for the output
     out_item = rio_stac.stac.create_stac_item(
         source=otsu,
-        input_datetime=ls9_item.datetime,
+        input_datetime=ls9_item_stac.datetime,
         id=output_item_id,
         asset_roles=["data", "visual"],
         asset_href=os.path.basename(otsu),
@@ -108,8 +107,6 @@ def otsu_cli(item_ndi, ls9_item, collection_url):
     os.remove(otsu)
     cat.add_items([out_item])
 
-    cat.normalize_and_save(
-        root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED
-    )
+    cat.normalize_and_save(root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED)
 
     logger.info("Otsu thresholding completed and saved to STAC catalog.")

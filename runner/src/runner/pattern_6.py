@@ -10,10 +10,12 @@
 
 
 import sys
+
 import click
-from loguru import logger
 import numpy as np
-from runner.functions import aoi2box, crop, get_asset, normalized_difference, get_item
+from loguru import logger
+
+from runner.functions import aoi2box, crop, get_asset, get_item, normalized_difference
 
 
 @click.command(
@@ -38,7 +40,7 @@ from runner.functions import aoi2box, crop, get_asset, normalized_difference, ge
     help="EPSG code",
     required=True,
 )
-def pattern_6(item_url, aoi, epsg):
+def pattern_6(item_url: str, aoi: str, epsg: str) -> None:
 
     item = get_item(item_url)
 
@@ -48,12 +50,12 @@ def pattern_6(item_url, aoi, epsg):
 
     for band in ["red", "nir08"]:
         asset = get_asset(item, band)
-        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         if not asset:
             msg = f"Common band name {band} not found in the assets"
             logger.error(msg)
             raise ValueError(msg)
+        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         bbox = aoi2box(aoi)
 
@@ -63,9 +65,7 @@ def pattern_6(item_url, aoi, epsg):
 
     # calculate the mean of the NDVI excluding NaN values
     logger.info("Calculating NDVI mean...")
-    mean = np.nanmean(
-        normalized_difference(cropped_assets["nir08"], cropped_assets["red"])
-    )
+    mean = np.nanmean(normalized_difference(cropped_assets["nir08"], cropped_assets["red"]))
 
     sys.stdout.write(str(mean))
 

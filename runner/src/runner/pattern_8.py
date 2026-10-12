@@ -9,20 +9,22 @@
 # Implementation: detects water bodies using the Normalized Difference Water Index (NDWI) and Otsu thresholding.
 
 import os
-import sys
-import click
-from loguru import logger
-import rasterio
-import pystac
 import shutil
+import sys
+
+import click
+import pystac
+import rasterio
 import rio_stac
+from loguru import logger
+
 from runner.functions import (
     aoi2box,
     crop,
     get_asset,
+    get_item,
     normalized_difference,
     threshold,
-    get_item,
 )
 
 
@@ -61,7 +63,9 @@ from runner.functions import (
     help="Flag to produce the output",
     is_flag=True,
 )
-def pattern_8(item_url, aoi, bands, epsg, produce_output):
+def pattern_8(
+    item_url: str, aoi: str, bands: tuple[str, ...], epsg: str, produce_output: bool
+) -> None:
 
     if not produce_output:
         logger.info("Will not produce anything")
@@ -75,12 +79,12 @@ def pattern_8(item_url, aoi, bands, epsg, produce_output):
 
     for band in bands:
         asset = get_asset(item, band)
-        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         if not asset:
             msg = f"Common band name {band} not found in the assets"
             logger.error(msg)
             raise ValueError(msg)
+        logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
         bbox = aoi2box(aoi)
 
@@ -95,6 +99,7 @@ def pattern_8(item_url, aoi, bands, epsg, produce_output):
     out_meta.update(
         {
             "dtype": "uint8",
+            "nodata": None,
             "driver": "COG",
             "tiled": True,
             "compress": "lzw",
@@ -112,11 +117,7 @@ def pattern_8(item_url, aoi, bands, epsg, produce_output):
     logger.info("Creating a STAC Catalog")
     cat = pystac.Catalog(id="catalog", description="water-bodies")
 
-    if os.path.isdir(item_url):
-        catalog = pystac.read_file(os.path.join(item_url, "catalog.json"))
-        item = next(catalog.get_items())
-    else:
-        item = pystac.read_file(item_url)
+    item = get_item(item_url)
 
     os.makedirs(os.path.join("output", item.id), exist_ok=True)
     shutil.copy(water_body, os.path.join("output", item.id))
@@ -135,8 +136,6 @@ def pattern_8(item_url, aoi, bands, epsg, produce_output):
     os.remove(water_body)
     cat.add_items([out_item])
 
-    cat.normalize_and_save(
-        root_href="./output", catalog_type=pystac.CatalogType.SELF_CONTAINED
-    )
+    cat.normalize_and_save(root_href="./output", catalog_type=pystac.CatalogType.SELF_CONTAINED)
 
     logger.info("Done!")

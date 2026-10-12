@@ -1,71 +1,84 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
 name = "stage-in"
 dynamic = ["version"]
-description = ''
+description = "STAC asset staging helper for application package patterns"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12,<3.13"
 license = "MIT"
 keywords = []
 authors = [
   { name = "Fabrice Brito", email = "fabrice.brito@terradue.com" },
 ]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
-]
-dependencies = [
-  "stac-asset",
-  "boto3==1.35.36",
-  "pystac",
-  "loguru",
-  "click",
-  "pyyaml",
-]
+classifiers = ["Development Status :: 4 - Beta", "Programming Language :: Python", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: Implementation :: CPython", "Programming Language :: Python :: Implementation :: PyPy"]
+dependencies = ["stac-asset", "boto3>=1.35,<2", "pystac", "loguru", "click", "pyyaml"]
 
 [project.urls]
-Documentation = "https://github.com/Fabrice Brito/stage-in#readme"
-Issues = "https://github.com/Fabrice Brito/stage-in/issues"
-Source = "https://github.com/Fabrice Brito/stage-in"
+Documentation = "https://eoap.github.io/application-package-patterns/"
+Source = "https://github.com/eoap/application-package-patterns"
+Issues = "https://github.com/eoap/application-package-patterns/issues"
 
 [tool.hatch.version]
 path = "src/stage_in/__about__.py"
 
-[tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy>=1.0.0",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/stage_in tests}"
+[tool.hatch.envs.test]
+template = "dev"
 
-[tool.coverage.run]
-source_pkgs = ["stage_in", "tests"]
-branch = true
-parallel = true
-omit = [
-  "src/stage_in/__about__.py",
-]
+[tool.hatch.envs.test.scripts]
+test = ["bootstrap", "pytest -q {args}"]
 
-[tool.coverage.paths]
-stage_in = ["src/stage_in", "*/stage-in/src/stage_in"]
-tests = ["tests", "*/stage-in/tests"]
+[tool.hatch.envs.default]
+template = "dev"
+skip-install = false
+pre-install-commands = ["uv pip install --require-hashes -r requirements/development.txt"]
+post-install-commands = ["uv pip install --no-deps --no-build-isolation -e ."]
 
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+[tool.hatch.envs.dev]
+skip-install = true
+installer = "uv"
+post-install-commands = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
+template = "dev"
+python = "3.12"
 
+[tool.hatch.envs.dev.scripts]
+bootstrap = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
+check = ["bootstrap", "format-check", "lint-check", "typecheck", "security"]
+format-check = "ruff format --check src"
+lint-check = "ruff check src"
+typecheck = "mypy src"
+security = "bandit -r src -ll"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stage_in"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/README.md", "/pyproject.toml", "/Dockerfile", "/requirements", "/typing", "/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "C4", "SIM", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+ignore_missing_imports = true
+strict = true
+mypy_path = "typing"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "tests_cli.py"]
+addopts = "--import-mode=importlib"
+pythonpath = ["."]
 [project.scripts]
 stage-in = "stage_in.app:cli"

@@ -1,77 +1,81 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
 name = "patterns"
 dynamic = ["version"]
-description = ''
+description = "CWL application package patterns and staging composition"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 license = "MIT"
 keywords = []
 authors = [
   { name = "Fabrice Brito", email = "fabrice.brito@terradue.com" },
 ]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
-]
-dependencies = [
-  "eoap-cwlwrap==0.32.0",
-  "nose2", 
-  "cwltool",
-  "ipykernel",
-  "graphviz",
-  "cwl-utils",
-  "pillow",
-  "cwl-loader==0.27.0",
-  "plantuml",
-  "cwl2puml==0.49.1",
-  "PyYAML"
-]
+classifiers = ["Development Status :: 4 - Beta", "Programming Language :: Python", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: Implementation :: CPython", "Programming Language :: Python :: Implementation :: PyPy"]
+dependencies = ["eoap-cwlwrap==0.32.0", "nose2", "cwltool", "ipykernel", "graphviz", "cwl-utils", "pillow", "cwl-loader==0.27.0", "plantuml", "cwl2puml==0.49.1", "PyYAML"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
+[tool.hatch.build.targets.wheel]
+packages = ["patterns"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/patterns", "/README.md", "/LICENSE", "/pyproject.toml", "/Dockerfile", "/requirements", "/typing", "/tests", "/scripts", "/cwl-workflow", "/templates", "/runner", "/stage-in", "/mastering-staging.lock.json"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "C4", "SIM", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+ignore_missing_imports = true
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["runner/tests"]
+python_files = ["test_*.py", "tests_cli.py"]
+addopts = "--import-mode=importlib"
+pythonpath = ["runner"]
 [project.urls]
-Documentation = "https://github.com/eoap/application-package-patterns#README.md"
-Issues = "https://github.com/eoap/application-package-patterns/issues"
+Documentation = "https://eoap.github.io/application-package-patterns/"
 Source = "https://github.com/eoap/application-package-patterns"
+Issues = "https://github.com/eoap/application-package-patterns/issues"
 
 [tool.hatch.version]
 path = "patterns/__about__.py"
 
-[tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy>=1.0.0",
-  "cwl-loader==0.27.0"
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/stage_in tests}"
+[tool.hatch.envs.test]
+template = "dev"
 
-[tool.coverage.run]
-source_pkgs = ["tests"]
-branch = true
-parallel = true
-omit = [
-  "patterns/__about__.py",
-]
+[tool.hatch.envs.test.scripts]
+test = ["bootstrap", "pytest -q {args}"]
 
-[tool.coverage.paths]
-tests = ["tests", "*/stage-in/tests"]
+[tool.hatch.envs.default]
+template = "dev"
+skip-install = false
+pre-install-commands = ["uv pip install --require-hashes -r requirements/development.txt"]
+post-install-commands = ["uv pip install --no-deps --no-build-isolation -e . -e runner"]
 
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+[tool.hatch.envs.dev]
+skip-install = true
+installer = "uv"
+post-install-commands = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e . -e runner"]
+template = "dev"
+python = "3.12"
+
+[tool.hatch.envs.dev.scripts]
+bootstrap = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e . -e runner"]
+check = ["bootstrap", "format-check", "lint-check", "typecheck", "security"]
+format-check = "ruff format --check patterns"
+lint-check = "ruff check patterns"
+typecheck = "mypy patterns"
+security = "bandit -r patterns -ll"
 

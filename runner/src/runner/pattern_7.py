@@ -9,19 +9,21 @@
 # Implementation: detects water bodies using the Normalized Difference Water Index (NDWI) and Otsu thresholding.
 
 import os
+import shutil
+
 import click
 import pystac
 import rasterio
-from loguru import logger
-import shutil
 import rio_stac
+from loguru import logger
+
 from runner.functions import (
     aoi2box,
     crop,
     get_asset,
+    get_item,
     normalized_difference,
     threshold,
-    get_item,
 )
 
 
@@ -61,13 +63,14 @@ from runner.functions import (
     required=True,
     multiple=True,
 )
-def pattern_7(item_url_1, item_url_2, aoi, bands, epsg):
+def pattern_7(
+    item_url_1: str, item_url_2: str, aoi: str, bands: tuple[str, ...], epsg: str
+) -> None:
 
     logger.info("Creating a STAC Catalog")
     cat = pystac.Catalog(id="catalog", description="water-bodies")
 
     for item_url in [item_url_1, item_url_2]:
-
         if item_url is None:
             continue
 
@@ -79,12 +82,12 @@ def pattern_7(item_url_1, item_url_2, aoi, bands, epsg):
 
         for band in bands:
             asset = get_asset(item, band)
-            logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
             if not asset:
                 msg = f"Common band name {band} not found in the assets"
                 logger.error(msg)
                 raise ValueError(msg)
+            logger.info(f"Read asset {band} from {asset.get_absolute_href()}")
 
             bbox = aoi2box(aoi)
 
@@ -99,6 +102,7 @@ def pattern_7(item_url_1, item_url_2, aoi, bands, epsg):
         out_meta.update(
             {
                 "dtype": "uint8",
+                "nodata": None,
                 "driver": "COG",
                 "tiled": True,
                 "compress": "lzw",
@@ -113,11 +117,7 @@ def pattern_7(item_url_1, item_url_2, aoi, bands, epsg):
             logger.info("Write otsu.tif")
             dst_dataset.write(water_bodies, indexes=1)
 
-        if os.path.isdir(item_url):
-            catalog = pystac.read_file(os.path.join(item_url, "catalog.json"))
-            item = next(catalog.get_items())
-        else:
-            item = pystac.read_file(item_url)
+        item = get_item(item_url)
 
         os.makedirs(item.id, exist_ok=True)
         shutil.copy(water_body, item.id)
@@ -136,8 +136,6 @@ def pattern_7(item_url_1, item_url_2, aoi, bands, epsg):
         os.remove(water_body)
         cat.add_items([out_item])
 
-    cat.normalize_and_save(
-        root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED
-    )
+    cat.normalize_and_save(root_href="./", catalog_type=pystac.CatalogType.SELF_CONTAINED)
 
     logger.info("Done!")

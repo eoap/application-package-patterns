@@ -1,33 +1,22 @@
+"""Shared SDK-based scientific operations for application package patterns."""
+
 import os
-import click
-import pystac
-import rasterio
-from skimage.filters import threshold_otsu
-from rasterio.mask import mask
-from pyproj import Transformer
-from shapely import box
-from loguru import logger
-import rasterio
-import pystac
-import shutil
-import rio_stac
+
 import numpy as np
-
-np.seterr(divide="ignore", invalid="ignore")
-
-
-def get_item(item_url):
-
-    if os.path.isdir(item_url):
-        catalog = pystac.read_file(os.path.join(item_url, "catalog.json"))
-        item = next(catalog.get_items())
-    else:
-        item = pystac.read_file(item_url)
-
-    return item
+import pystac
+import rasterio
+from loguru import logger
+from numpy.typing import NDArray
+from pyproj import Transformer
+from pystac.extensions.eo import AssetEOExtension
+from rasterio.mask import mask
+from shapely import box
+from skimage.filters import threshold_otsu
 
 
-def crop(asset: pystac.Asset, bbox, epsg):
+def crop(
+    asset: pystac.Asset, bbox: list[float], epsg: str
+) -> tuple[NDArray[np.float32], dict[str, object]]:
     """_summary_
 
     Args:
@@ -48,10 +37,8 @@ def crop(asset: pystac.Asset, bbox, epsg):
 
         logger.info(f"Crop {asset.get_absolute_href()}")
 
-        out_image, out_transform = rasterio.mask.mask(
-            src, [transformed_bbox], crop=True
-        )
-        out_meta = src.meta.copy()
+        out_image, out_transform = mask(src, [transformed_bbox], crop=True)
+        out_meta: dict[str, object] = src.meta.copy()
 
         out_meta.update(
             {
@@ -61,36 +48,62 @@ def crop(asset: pystac.Asset, bbox, epsg):
             }
         )
 
-        return out_image.astype(np.float32), out_meta
+        cropped: NDArray[np.float32] = out_image.astype(np.float32)
+        return cropped, out_meta
 
 
-def threshold(data):
+def threshold(data: NDArray[np.float32]) -> NDArray[np.bool_]:
     """Returns the Otsu threshold of a numpy array"""
-    return data > threshold_otsu(data[np.isfinite(data)])
+    result: NDArray[np.bool_] = data > threshold_otsu(data[np.isfinite(data)])
+    return result
 
 
-def normalized_difference(array1, array2):
+def normalized_difference(
+    array1: NDArray[np.float32], array2: NDArray[np.float32]
+) -> NDArray[np.float32]:
     """Returns the normalized difference of two numpy arrays"""
-    return (array1 - array2) / (array1 + array2)
+    result: NDArray[np.float32] = (array1 - array2) / (array1 + array2)
+    return result
 
 
-def aoi2box(aoi):
+def aoi2box(aoi: str) -> list[float]:
     """Converts an area of interest expressed as a bounding box to a list of floats"""
     return [float(c) for c in aoi.split(",")]
 
 
-def get_asset(item, common_name):
+def get_asset(item: pystac.Item, common_name: str) -> pystac.Asset | None:
     """Returns the asset of a STAC Item defined with its common band name"""
     for _, asset in item.get_assets().items():
-        if not "data" in asset.to_dict()["roles"]:
+        if "data" not in asset.to_dict()["roles"]:
             continue
 
-        eo_asset = pystac.extensions.eo.AssetEOExtension(asset)
+        eo_asset = AssetEOExtension(asset)
         if not eo_asset.bands:
             continue
         for b in eo_asset.bands:
-            if (
-                "common_name" in b.properties.keys()
-                and b.properties["common_name"] == common_name
-            ):
+            if b.common_name == common_name:
                 return asset
+    return None
+
+
+def get_item(item_url: str) -> pystac.Item:
+    item: pystac.STACObject | None
+    if os.path.isdir(item_url):
+        catalog = pystac.read_file(os.path.join(item_url, "catalog.json"))
+        if not isinstance(catalog, pystac.Catalog):
+            raise ValueError("Staged input must contain a STAC Catalog")
+        item = next(iter(catalog.get_items()), None)
+    else:
+        item = pystac.read_file(item_url)
+    if not isinstance(item, pystac.Item):
+        raise ValueError("Input must identify a STAC Item")
+    return item
+
+
+def get_collection(href: str | None) -> pystac.Collection | None:
+    if not href:
+        return None
+    document = pystac.read_file(href)
+    if not isinstance(document, pystac.Collection):
+        raise ValueError("Collection input must be a STAC Collection")
+    return document
