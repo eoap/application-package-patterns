@@ -1,0 +1,13 @@
+{
+  "source_commit": "793794353e38c607c609f1dda9350263aa5b2673",
+  "cluster": "eoap-mastering-app-package-docker",
+  "published_candidate_acceptance_passed": false,
+  "unit_tests_passed": 33,
+  "unit_test_commit": "4fe5f37",
+  "real_acceptance_cases_passed": 16,
+  "processing_image": "eoap-patterns-runner:rocky-4fe5f37",
+  "processing_source_commit": "14a7eb9",
+  "staging_images": "published Mastering references from mastering-staging.lock.json",
+  "evidence_directory": "/calrissian/patterns-rocky-7937943/20261012T014923Z",
+  "source_notebook_acceptance_passed": false
+}
