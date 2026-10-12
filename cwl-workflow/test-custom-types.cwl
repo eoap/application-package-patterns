@@ -48,11 +48,6 @@ $graph:
         - ndvi
         - ndwi
         - none
-      - type: record
-        name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime
-        fields:
-        - name: value
-          type: string
   inputs:
   - id: bbox
     type: https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#BBox
@@ -146,11 +141,6 @@ $graph:
         - ndvi
         - ndwi
         - none
-      - type: record
-        name: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime
-        fields:
-        - name: value
-          type: string
   baseCommand:
   - echo
   arguments:

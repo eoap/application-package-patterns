@@ -174,6 +174,12 @@ def embed_wrapper_types(path, application=None):
                 result = []
                 imported = set()
                 for schema in value["types"]:
+                    existing_import = schema.get("$import") if isinstance(schema, dict) else None
+                    if existing_import in approved:
+                        if existing_import not in imported:
+                            result.append(schema)
+                            imported.add(existing_import)
+                        continue
                     name = schema.get("name", "") if isinstance(schema, dict) else ""
                     url = next((url for url in approved if name.startswith(url + "#")), None)
                     if url:

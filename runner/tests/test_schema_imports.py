@@ -42,3 +42,22 @@ def test_graph_wrap_keeps_published_uri_import(tmp_path):
         for value in records
     )
     assert not any(str(value.get("$import", "")).startswith("eoap-types") for value in records)
+
+
+def test_custom_type_ports_retain_published_identifiers():
+    from patterns.graph import load_document
+
+    root = Path(__file__).resolve().parents[2]
+    processes = load_document(root / "cwl-workflow/test-custom-types.cwl")
+    assert isinstance(processes, list)
+    workflow = next(process for process in processes if process.id.endswith("test-custom-types"))
+    types = {port.id.rsplit("/", 1)[-1]: port.type_ for port in workflow.inputs}
+    assert (
+        types["start_time"]
+        == "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#DateTime"
+    )
+    assert (
+        types["product_uri"]
+        == "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI"
+    )
+    assert types["bbox"] == "https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#BBox"

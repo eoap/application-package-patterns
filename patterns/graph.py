@@ -16,7 +16,7 @@ from cwltool.load_tool import fetch_document, resolve_and_validate_document
 
 SCHEMA_ALIASES = {
     "https://raw.githubusercontent.com/eoap/schemas/main/ogc.yaml#": "#_shared_ogc_",
-    "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI": "#URI",
+    "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#": "#_shared_string_format_",
     "https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#": "#_shared_geojson_",
 }
 
@@ -61,32 +61,34 @@ def load_document(path: Path) -> Process | list[Process]:
     if not isinstance(scoped, dict):
         raise ValueError("CWL graph metadata must be a mapping")
     result = load_cwl_from_yaml(scoped, uri=path.resolve().as_uri())
-    _restore_uri_ports(result if isinstance(result, list) else [result])
+    _restore_shared_ports(result if isinstance(result, list) else [result])
     return result
 
 
-def _restore_uri_ports(processes: list[Process]) -> None:
-    """Restore the published URI identifier required by the wrapping SDK."""
-    uri_type = "https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI"
+def _published_type(reference: str) -> str:
+    """Expose the original published identifier after temporary SDK scoping."""
+    fragment = "#" + reference.rsplit("#", 1)[-1] if "#" in reference else reference
+    for namespace, alias in SCHEMA_ALIASES.items():
+        if fragment.startswith(alias):
+            return namespace + fragment[len(alias) :]
+    return reference
+
+
+def _restore_shared_ports(processes: list[Process]) -> None:
+    """Restore published type identifiers for wrapping and lesson displays."""
     for process in processes:
         for port in [*process.inputs, *process.outputs]:
-            if isinstance(port.type_, str) and port.type_.endswith("#URI"):
-                port.type_ = uri_type
+            if isinstance(port.type_, str):
+                port.type_ = _published_type(port.type_)
             elif isinstance(port.type_, list):
-                port.type_ = [
-                    uri_type if isinstance(t, str) and t.endswith("#URI") else t for t in port.type_
-                ]
-            elif (
-                isinstance(
-                    port.type_,
-                    (
-                        InputArraySchema,
-                        OutputArraySchema,
-                        CommandInputArraySchema,
-                        CommandOutputArraySchema,
-                    ),
-                )
-                and isinstance(port.type_.items, str)
-                and port.type_.items.endswith("#URI")
-            ):
-                port.type_.items = uri_type
+                port.type_ = [_published_type(t) if isinstance(t, str) else t for t in port.type_]
+            elif isinstance(
+                port.type_,
+                (
+                    InputArraySchema,
+                    OutputArraySchema,
+                    CommandInputArraySchema,
+                    CommandOutputArraySchema,
+                ),
+            ) and isinstance(port.type_.items, str):
+                port.type_.items = _published_type(port.type_.items)
