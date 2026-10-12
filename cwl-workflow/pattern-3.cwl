@@ -106,9 +106,6 @@ $graph:
   id: clt
   requirements:
     InlineJavascriptRequirement: {}
-    EnvVarRequirement:
-      envDef:
-        PATH: $PATH:/app/envs/runner/bin
     ResourceRequirement:
       coresMin: 1
       ramMin: 2048

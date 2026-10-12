@@ -130,9 +130,6 @@ $graph:
   id: crop
   requirements:
     InlineJavascriptRequirement: {}
-    EnvVarRequirement:
-      envDef:
-        PATH: /app/envs/runner/bin
     ResourceRequirement:
       coresMin: 1
       ramMin: 2048
@@ -239,9 +236,6 @@ $graph:
   id: norm_diff
   requirements:
     InlineJavascriptRequirement: {}
-    EnvVarRequirement:
-      envDef:
-        PATH: /app/envs/runner/bin
     ResourceRequirement:
       coresMin: 1
       ramMin: 2048
@@ -330,9 +324,6 @@ $graph:
   id: otsu
   requirements:
     InlineJavascriptRequirement: {}
-    EnvVarRequirement:
-      envDef:
-        PATH: /app/envs/runner/bin
     ResourceRequirement:
       coresMin: 1
       ramMin: 2048
