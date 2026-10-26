@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
       - name: Install the hash-locked environment and Podman
         run: |
           sudo apt-get update
@@ -79,7 +79,7 @@ jobs:
           name: acceptance-${{ github.sha }}
           path: accepted
       - uses: oras-project/setup-oras@v1
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
       - name: Prepare all unchanged validated assets before publication
         run: |
           version=$(jq -er .version codemeta.json)
