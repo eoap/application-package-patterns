@@ -21,6 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.5"
       - name: Install the hash-locked environment and Podman
         run: |
           sudo apt-get update
@@ -80,6 +82,8 @@ jobs:
           path: accepted
       - uses: oras-project/setup-oras@v1
       - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.5"
       - name: Prepare all unchanged validated assets before publication
         run: |
           version=$(jq -er .version codemeta.json)
