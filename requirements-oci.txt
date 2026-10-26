@@ -24,10 +24,12 @@ botocore==1.43.111 \
     # via
     #   boto3
     #   s3transfer
-cachecontrol==0.14.4 \
+cachecontrol[filecache]==0.14.4 \
     --hash=sha256:b7ac014ff72ee199b5f8af1de29d60239954f223e948196fa3d84adaffc71d2b \
     --hash=sha256:e6220afafa4c22a47dd0badb319f84475d79108100d04e26e8542ef7d3ab05a1
-    # via schema-salad
+    # via
+    #   cachecontrol
+    #   schema-salad
 cachetools==7.2.1 \
     --hash=sha256:63aa53dfe7473c10cccdd5a01dedf76ef2c4b73a58840d9396e7d0752cbdac3b \
     --hash=sha256:b1a7537025c06abf96fcc1443e496af9a3fb95e774e70e1f0af226f73f7f2dcc
@@ -239,9 +241,9 @@ cwl2oci==0.1.1 \
     --hash=sha256:0f888f87560efb823e5c9be44120b6be75f558a72eb6c54e8032158a9259f323 \
     --hash=sha256:4e9bab60a5c1927e57c85f921a67b400e430c43aa51c5556cc0a3637516ff363
     # via -r requirements-oci.in
-cwltool==3.2.20260720092025 \
-    --hash=sha256:042d37c73cd4e85adb7f55ebb770f87944b2e72d54432437234ffff6be9abb39 \
-    --hash=sha256:d0671d429f2e35d8009c77c17625a418bceaa8b236ff5ca2cd0bcfc867cf4bf4
+cwltool==3.3.20260925135507 \
+    --hash=sha256:296c3952e1753486fa51117fb599fdfacea10193e0c50b83a33cbc821f88c720 \
+    --hash=sha256:e8df93657d6c8ade5a0967d0ed42501bdb67dd15e00c8a664f1212c3887d74a1
     # via -r requirements-oci.in
 dnspython==2.9.0 \
     --hash=sha256:9a4aedb833c3c1b49214d04d44d3032ab7a9135f7c1d29a549b4ff78fd82fda9 \
