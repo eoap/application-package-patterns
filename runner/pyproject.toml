@@ -46,6 +46,7 @@ Issues = "https://github.com/eoap/application-package-patterns/issues"
 Source = "https://github.com/eoap/application-package-patterns"
 
 [tool.hatch.envs.prod]
+python = "3.12"
 path = "/app/envs/runner"
 
 [project.scripts]
