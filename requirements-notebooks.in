@@ -1,5 +1,5 @@
 eoap-cwlwrap==0.32.0
-cwl-loader==0.27.0
+cwl-loader==0.28.0
 cwl2puml==0.49.1
 PyYAML
 cwltool
