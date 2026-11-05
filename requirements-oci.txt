@@ -24,10 +24,12 @@ botocore==1.43.111 \
     # via
     #   boto3
     #   s3transfer
-cachecontrol==0.14.4 \
+cachecontrol[filecache]==0.14.4 \
     --hash=sha256:b7ac014ff72ee199b5f8af1de29d60239954f223e948196fa3d84adaffc71d2b \
     --hash=sha256:e6220afafa4c22a47dd0badb319f84475d79108100d04e26e8542ef7d3ab05a1
-    # via schema-salad
+    # via
+    #   cachecontrol
+    #   schema-salad
 cachetools==7.2.1 \
     --hash=sha256:63aa53dfe7473c10cccdd5a01dedf76ef2c4b73a58840d9396e7d0752cbdac3b \
     --hash=sha256:b1a7537025c06abf96fcc1443e496af9a3fb95e774e70e1f0af226f73f7f2dcc
@@ -218,9 +220,9 @@ coloredlogs==15.0.1 \
     --hash=sha256:612ee75c546f53e92e70049c9dbfcc18c935a2b9a53b66085ce9ef6a6e5c0934 \
     --hash=sha256:7c991aa71a4577af2f82600d8f8f3a89f936baeaf9b50a9c197da014e5bf16b0
     # via cwltool
-cwl-loader==0.27.0 \
-    --hash=sha256:083b6e98ff338913f6cb76227ccf790ee8804e5abde32574f33b7059dd065f8b \
-    --hash=sha256:42661bdeb5b33eca0b929d23a0c52c4bacbc7b0c76d018d67f852950a570cffc
+cwl-loader==0.28.0 \
+    --hash=sha256:149d223f795ddaae62a824801c94c050bd56a36b671be775a038c17aa6d7b5ec \
+    --hash=sha256:c79334423322525154490ab0d51bb40894d9bb5fecef31e5be6dead5566b6fc9
     # via transpiler-mate-runtime
 cwl-upgrader==1.2.15 \
     --hash=sha256:42ae4546a433a7439f56282942e3a9369d08d9a2ad31d86cddb1bb298e28640d \
@@ -1147,9 +1149,9 @@ transpiler-mate-api==1.0.1 \
     # via
     #   cwl2oci
     #   transpiler-mate-runtime
-transpiler-mate-runtime==1.3.0 \
-    --hash=sha256:06acb2f7ef8c80e797498011c57aef2a669b0ed454aff5faf66fe29d06962b4d \
-    --hash=sha256:c1242b2dbc0cd182c764bd075cbb4c5f283d39fec9656ab86f3000a9e96cb02c
+transpiler-mate-runtime==1.3.1 \
+    --hash=sha256:55b49ba2c1e198184a03ac22f02497ac5eec7b8338663c7e7eb9203914d3dbc0 \
+    --hash=sha256:7b0742eafff572ca6bfbf19f6d54f4e6e093e54e241d865665fbcb28e0416ac2
     # via -r requirements-oci.in
 typing-extensions==4.16.0 \
     --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8 \
