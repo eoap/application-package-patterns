@@ -78,7 +78,7 @@ jobs:
         with:
           name: acceptance-${{ github.sha }}
           path: accepted
-      - uses: oras-project/setup-oras@v1
+      - uses: oras-project/setup-oras@v2
       - uses: astral-sh/setup-uv@v6
       - name: Prepare all unchanged validated assets before publication
         run: |
